@@ -1013,9 +1013,9 @@ while W_counter > counter:
         #Upl = 8*3.14
         Upl = 10
 
-        if break_code1=='go':
-            if break_code1=='go':
-                if break_code1=='go':
+        if abs(gl1) < 5 and abs(gl2) < 5 and abs(gl3) < 5 and abs(gl3) < 5:
+            if abs(gl_s1) < 5 and abs(gl_s2) < 5 and abs(gl_s3) < 5:
+                if abs(galpha_4) < 5 and abs(gmu_3) < 5 and abs(gmusb) < 5:
                     if break_code1=='go':
                         if break_code1=='go':
                             if break_code1=='go':
