@@ -935,19 +935,24 @@ W_counter = counter + nupoints
 
 
 def RanAngles():
-    a2 = np.random.uniform(0,2*np.pi)
-    a3 = np.random.uniform(0,2*np.pi)
+    a2 = np.random.uniform(0,np.pi)
+    a3 = np.random.uniform(0,np.pi)
     beta = np.random.uniform(np.arctan(1),np.arctan(15))
-    delta = np.random.uniform(np.arccos(0.9),np.arccos(1))
-    gamma1 = np.random.uniform(0,2*np.pi)
+    delta = np.random.uniform(np.arccos(1),np.arccos(0.9))
+    gamma1 = np.random.uniform(np.arccos(1),np.arccos(0))
     return a2,a3,beta,delta,gamma1
 def higgsSQ_masses():
+    mass = np.random.uniform(200**2,700**2)
     mH1sq = 125.09**2
-    mH2sq = np.random.uniform(450**2,500**2)
-    mH3sq = np.random.uniform(500**2,550**2)
-    mCh = np.random.uniform(410**2,520**2)
-    mAh2sq = np.random.uniform(480**2,520**2)
-    mAh3sq = np.random.uniform(520**2,620**2)
+    mH2sq = np.random.uniform(mass - 0.5*mass ,mass + 0.5*mass)
+    mH3sq = np.random.uniform(mass - 0.5*mass ,mass + 0.5*mass)
+    mCh = np.random.uniform(mass - 0.5*mass ,mass + 0.5*mass)
+    mAh2sq = np.random.uniform(mass - 0.5*mass ,mass + 0.5*mass)
+    mAh3sq = np.random.uniform(mass - 0.5*mass ,mass + 0.5*mass)
+    if mAh2sq > mAh3sq:
+        mAh2sq , mAh3sq = mAh3sq , mAh2sq
+    if mH2sq > mH3sq:
+        mH2sq , mH3sq = mH3sq , mH2sq
     return mH1sq,mH2sq,mH3sq,mCh,mAh2sq,mAh3sq
 def higgs_masses(mH1sq,mH2sq,mH3sq,mCh,mAh2sq,mAh3sq):
     Mhh1,Mhh2,Mhh3 = np.sqrt(mH1sq),np.sqrt(mH2sq),np.sqrt(mH3sq)
@@ -958,7 +963,7 @@ def VEVs(beta):
     v = 246
     v_u = np.cos(beta)*v
     v_d = np.sin(beta)*v
-    v3 = np.random.uniform(1*10**3,9*10**3)
+    v3 = np.random.uniform(pow(10,3),9*pow(10,3))
     return v,v_u,v_d,v3
 
 def Fanction_alphas():
@@ -1013,9 +1018,9 @@ while W_counter > counter:
         #Upl = 8*3.14
         Upl = 10
 
-        if abs(gl1) < 5 and abs(gl2) < 5 and abs(gl3) < 5 and abs(gl3) < 5:
-            if abs(gl_s1) < 5 and abs(gl_s2) < 5 and abs(gl_s3) < 5:
-                if abs(galpha_4) < 5 and abs(gmu_3) < 5 and abs(gmusb) < 5:
+        if abs(gl1) < Upl and abs(gl2) < Upl and abs(gl3) < Upl and abs(gl4) < Upl :
+            if abs(gl_s1) < Upl and abs(gl_s2) < Upl and abs(gl_s3) < Upl :
+                if abs(galpha_4) < Upl:
                     if break_code1=='go':
                         if break_code1=='go':
                             if break_code1=='go':
