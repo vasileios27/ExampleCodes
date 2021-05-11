@@ -63,7 +63,7 @@ if not cluster:
 if cluster:
     #SPheno cluster
     SPheno_Path= '~/opt/SPheno-4.0.4'
-    spheno_BGL = os.path.join(SPheno_Path,'bin/BGLNCS')
+    spheno_BGL = os.path.join(SPheno_Path,'bin/SPhenoBGLNCS')
 
     #HiggsBound folder
     HiggsBounds_Path = '~/opt/higgsbounds/build'
@@ -685,7 +685,7 @@ def Lepton_neutrino_Yukawa_couplings_BGL(v_s,v_u,v_d):
     #heavy neutrino masses
     #------------------
     mheavy1 = pow(10,4)
-    mheavy2 = pow(10,4)
+    mheavy2 = 2*pow(10,4)
     Yb = (mheavy1 - mheavy2)/(Sqrt(2)* vs)
     Yc = -((Sqrt(mheavy1)*Sqrt(mheavy2))/vs)
 
