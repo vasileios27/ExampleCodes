@@ -215,8 +215,6 @@ def Fuction_musb(v,v3,beta,delta,mH1sq,mH2sq,mH3sq,mAh2sq,mAh3sq,mCh,a2,a3,alpha
     v**2* Cos(beta)* Sin(beta)* (-3*Sqrt(2)* alpha_1 + Sqrt(2)* alpha_2 - 8* v3* alpha_3))/(4* v3)
     return musb
 
-
-
 def Yukawa_alaysis(beta,v3):
     #Yukawas calculation
     #-------------------------------------------------------------------------------
@@ -291,13 +289,13 @@ def Yukawa_alaysis(beta,v3):
     tau0, sigma0 =  fsolve(equations, (1, 1))
 
 
-    vrd = [[np.cos(sigma0)*np.cos(omega0), np.cos(sigma0)*np.sin(omega0), np.sin(sigma0)],
+    vrd = np.array([[np.cos(sigma0)*np.cos(omega0), np.cos(sigma0)*np.sin(omega0), np.sin(sigma0)],
                [-np.cos(omega0)*np.sin(sigma0)*np.sin(tau0) - np.cos(tau0)*np.sin(omega0),
                 np.cos(tau0)*np.cos(omega0) - np.sin(sigma0)*np.sin(tau0)*np.sin(omega0),
                 np.cos(sigma0)*np.sin(tau0)],
                [-np.cos(tau0)*np.cos(omega0)*np.sin(sigma0) + np.sin(tau0)*np.sin(omega0),
                 -np.cos(omega0)*np.sin(tau0) - np.cos(tau0)*np.sin(sigma0)*np.sin(omega0),
-                np.cos(sigma0)*np.cos(tau0)]]
+                np.cos(sigma0)*np.cos(tau0)]])
 
 
     Du = np.array([[Mu,0,0],
@@ -353,37 +351,212 @@ def Yukawa_alaysis(beta,v3):
                                 [       0.,        0., 0.],
                                 [np.imag(MdT)[2, 0], np.imag(MdT)[2, 1], np.imag(MdT)[2, 2]]])
 
-    return Yd1_R,Yd2_R,Yu1,Yu2,v_u,v_d,vlu,vru,vld,vrd,Yd1_I,Yd2_I
+    Y1d11 = Yd1_R[0,0] + 1j*Yd1_I[0,0]
+    Y1d12 = Yd1_R[0,1] + 1j*Yd1_I[0,1]
+    Y1d13 = Yd1_R[0,2] + 1j*Yd1_I[0,2]
+    Y1d21 = Yd1_R[1,0] + 1j*Yd1_I[1,0]
+    Y1d22 = Yd1_R[1,1] + 1j*Yd1_I[1,1]
+    Y1d23 = Yd1_R[1,2] + 1j*Yd1_I[1,2]
+    Y2d31 = Yd2_R[2,0] + 1j*Yd2_I[2,0]
+    Y2d32 = Yd2_R[2,1] + 1j*Yd2_I[2,1]
+    Y2d33 = Yd2_R[2,2] + 1j*Yd2_I[2,2]
+    Y1u11 = Yu1[0,0] + 0.j
+    Y1u12 = Yu1[0,1] + 0.j
+    Y1u21 = Yu1[1,0] + 0.j
+    Y1u22 = Yu1[1,1] + 0.j
+    Y2u33 = Yu2[2,2] + 0.j
+
+    return Y1u11,Y1u12,Y1u21,Y1u22,Y2u33,Y1d11,Y1d12,Y1d13,Y1d21,Y1d22,Y1d23,\
+            Y2d31,Y2d32,Y2d33,vlu,vru,vld,vrd
+
+
+def NewYukawa_alaysis(beta,v3):
+    # VEVs
+    v = 246
+    v1 = np.cos(beta)*v
+    v2 = np.sin(beta)*v
+    #Yukawas calculation
+    #-------------------------------------------------------------------------------
+    #experimental values taken from PDG 2020
+    #https://pdg.lbl.gov/2020/reviews/rpp2020-rev-ckm-matrix.pdf
+    lam_value =  0.22650
+    lam_error_value = 0.00048
+    A_value = 0.790
+    A_error_plaus_value = 0.017
+    A_error_minus_value = 0.012
+    rho_value = 0.141
+    rho_error_plaus_value = 0.016
+    rho_error_minus_value = 0.017
+    etha_value = 0.357
+    etha_error_value = 0.0011
+
+    # Set the values for \[Lambda],\[Eta],\[Rho], A in the limite of the experimental values
+    lamda = np.random.uniform(lam_value-lam_error_value,lam_value+lam_error_value)
+    A = np.random.uniform(A_value-A_error_minus_value,A_value+A_error_plaus_value)
+    rho = np.random.uniform(rho_value-rho_error_minus_value,rho_value+rho_error_plaus_value)
+    eta = np.random.uniform(etha_value-etha_error_value,etha_value+etha_error_value)
+    #-----------------------------------------------------------------------------
+
+    # The experimental CKM matrix
+    UCKM = np.array([[1 - lamda**2/2, lamda, A*lamda**3*(-1.j* eta + rho)],
+                    [-lamda, 1 - lamda**2/2, A*lamda**2],
+                    [A*lamda**3*(1 - 1.j* eta - rho), -A*lamda**2, 1]])
+
+
+    #mass parameters
+    #------------------
+    Mu = np.array(0.00122)
+    Mc = np.array(0.590)
+    Mt = np.array(162.9)
+    Md = np.array(0.00276)
+    Ms = np.array(0.052)
+    Mb = np.array(2.75)
+
+    md1,md2,md3 = Md,Ms,Mb
+    mu1,mu2,mu3 = Mu,Mc,Mt
+
+    #Angles used to diagonalize quarks
+    #------------------
+    z1  = np.random.uniform(0,2*np.pi)
+    z2  = np.random.uniform(0,2*np.pi)
+    phi1 = np.random.uniform(0,2*np.pi)
+    phi2 = np.random.uniform(0,2*np.pi)
+    theta1 =  np.random.uniform(0,2*np.pi)
+    theta2 =  np.random.uniform(0,2*np.pi)
+    theta3 =  np.random.uniform(0,2*np.pi)
+    delta = np.random.uniform(0,2*np.pi)
+    ANGLES =[z1,z1,phi1,phi2,theta1,theta2,theta3,delta]
+
+    #Yukava calculations
+    #-------------------------------------------------------------------------------
+    #Unitary U^u_R matrix
+    vlu = np.array([[Cos(z1), -Cos(phi1)*Sin(z1) - 1.j* Sin(z1)*Sin(phi1), 0],
+                     [Cos(phi1)*Sin(z1) - 1.j* Sin(z1)* Sin(phi1), Cos(z1), 0],
+                     [0, 0, 1]])
+
+    #Unitary U^u_L matrix
+    vru = np.array([[Cos(z2), -Cos(phi2)*Sin(z2) - 1.j* Sin(z2)*Sin(phi2), 0],
+                      [Cos(phi2)*Sin(z2) - 1.j* Sin(z2)* Sin(phi2), Cos(z2), 0],
+                      [0, 0, 1]])
+    #Unitary U^d_L matrix calculated by mathematica "UdL = UuL.VCKM\[ConjugateTranspose]"
+    vld = np.array([[Cos(z1) - 1/2 *lamda**2* Cos(z1) - lamda*Cos(phi1)*Sin(z1) - 1.j *lamda*\
+            Sin(z1)* Sin(phi1), -lamda*Cos(z1) - Cos(phi1)*Sin(z1) + 1/2*lamda**2*Cos(phi1)*Sin(z1) +\
+            1.j* (-Sin(z1)* Sin(phi1) + 1/2 *lamda**2*Sin(z1)*Sin(phi1)), A*lamda**3*Cos(z1)\
+            - A*lamda**3* rho* Cos(z1) + A*lamda**2*Cos(phi1)*Sin(z1) + 1.j*(A*eta*lamda**3*Cos(z1) + \
+            A* lamda**2* Sin(z1)* Sin(phi1))],[lamda*Cos(z1) + Cos(phi1)*Sin(z1) - 1/2 *lamda**2*\
+            Cos(phi1)*Sin(z1) + 1.j* (-Sin(z1)*Sin(phi1) + 1/2*lamda**2*Sin(z1)*Sin(phi1)),
+            Cos(z1) - 1/2 *lamda**2*Cos(z1) - lamda*Cos(phi1)*Sin(z1) + 1.j*lamda*Sin(z1)*\
+            Sin(phi1), -A*lamda**2 *Cos(z1) + A*lamda**3*Cos(phi1)*Sin(z1) - A*lamda**3*rho*\
+            Cos(phi1)*Sin(z1) + A*eta*lamda**3*Sin(z1)*Sin(phi1) + 1.j*(A*eta*lamda**3*Cos(phi1)*Sin(z1) - \
+            A*lamda**3*Sin(z1)*Sin(phi1) + A*lamda**3*rho*Sin(z1)*Sin(phi1))],[1.j*A*eta*lamda**3 +\
+            A*lamda**3*rho, A*lamda**2, 1]])
+
+    #Unitary U^d_R matrix
+    vrd = np.array([[Cos(theta2)*Cos(theta3), Cos(theta2)*Sin(theta3), Cos(delta)*Sin(theta2) - 1.j* Sin(delta)*Sin(theta2)],\
+            [-Cos(delta)*Cos(theta3)*Sin(theta1)*Sin(theta2) - 1.j* Cos(theta3)*Sin(delta)*Sin(theta1)*Sin(theta2) - Cos(theta1)*Sin(theta3),\
+            Cos(theta1)*Cos(theta3) - Cos(delta)*Sin(theta1)*Sin(theta2)*Sin(theta3) - 1.j*Sin(delta)*Sin(theta1)*Sin(theta2)*Sin(theta3),\
+            Cos(theta2)*Sin(theta1)],
+            [-Cos(delta)*Cos(theta1)*Cos(theta3)*Sin(theta2) - 1.j*Cos(theta1)*Cos(theta3)*Sin(delta)*Sin(theta2) + Sin(theta1)*Sin(theta3),\
+            -Cos(theta3)*Sin(theta1) - Cos(delta)*Cos(theta1)*Sin(theta2)*Sin(theta3) - 1.j* Cos(theta1)*Sin(delta)*Sin(theta2)*Sin(theta3),
+            Cos(theta1)*Cos(theta2)]])
+
+
+    Du = np.array([[Mu,0,0],
+                    [0,Mc,0],
+                    [0,0,Mt]])
+    Dd = np.array([[Md,0,0],
+                    [0,Ms,0],
+                    [0,0,Mb]])
+
+    #Analytical solutions from mathematica
+    #-------------------------------------------------------------------------------
+
+    Y1d11 = -(1/(Sqrt(2)*v1))*(Cos(z1)*(2*A*md3*lamda**3*(-1 - 1.j*eta + rho)*(Cos(delta)\
+            + 1.j* Sin(delta)) *Sin(theta2) + Cos(theta2)*(md1*(-2 + lamda**2)*Cos(theta3) + \
+            2*md2*lamda*Sin(theta3))) - Sin(z1)*(Cos(phi1) + 1.j*Sin(phi1))*(2*\
+            A*md3*lamda**2*(Cos(delta) + 1.j*Sin(delta))*Sin(theta2) + Cos(theta2)*\
+            (-2*md1*lamda*Cos(theta3) + md2*(-2 + lamda**2)*Sin(theta3))))
+
+    Y1d12 = -(1/(Sqrt(2)*v1))*(-Cos(z1)*(Cos(theta1)*(-2*md2*lamda*Cos(theta3) + md1*\
+              (-2 + lamda**2)*Sin(theta3)) + Sin(theta1)*(2*A*md3*lamda**3*(1 + 1.j* \
+              eta - rho)*Cos(theta2) + (Cos(delta) - 1.j*Sin(delta))*Sin(theta2)*\
+              (md1*(-2 + lamda**2)*Cos(theta3) + 2*md2*lamda*Sin(theta3)))) - Sin(z1)*\
+              (Cos(phi1) +1.j*Sin(phi1))*(Cos(theta1)*(md2*(-2 + lamda**2)*Cos(theta3) + \
+              2*md1*lamda*Sin(theta3)) + Sin(theta1)*(2*A*md3*lamda**2*Cos(theta2) +\
+              (Cos(delta) - 1.j*Sin(delta))*Sin(theta2)*(2*md1*lamda*Cos(theta3) - \
+              md2*(-2 + lamda**2)*Sin(theta3)))))
+
+    Y1d13 = -(1/(Sqrt(2)*v1))*(-Cos(z1)*(Sin(theta1)*(2*md2*lamda*Cos(theta3) - \
+              md1*(-2 + lamda**2)*Sin(theta3)) + Cos(theta1)*(2*A*md3*lamda**3*(1 + \
+              1.j*eta - rho)*Cos(theta2) + (Cos(delta) - 1.j*Sin(delta))*Sin(theta2)*\
+              (md1*(-2 + lamda**2)*Cos(theta3) + 2*md2*lamda*Sin(theta3)))) + Sin(z1)*\
+              (Sin(theta1)*(Cos(phi1) +1.j*Sin(phi1))*(md2*(-2 + lamda**2)*Cos(theta3) + \
+              2*md1*lamda*Sin(theta3)) - Cos(theta1)*(2*1.j*A*md3*lamda**2*Cos(theta2)*\
+              Sin(phi1) + (-1.j*Cos(phi1)*Sin(delta) + (1.j*Cos(delta) + Sin(delta))*Sin(phi1))*\
+              Sin(theta2)*(2*md1*lamda*Cos(theta3) - md2*(-2 + lamda**2)*Sin(theta3)) + \
+              Cos(phi1)*(2*A*md3*lamda**2*Cos(theta2) + Cos(delta)*Sin(theta2)*(2*md1*\
+              lamda*Cos(theta3) - md2*(-2 + lamda**2)*Sin(theta3))))))
+
+    Y1d21 = (1/(Sqrt(2)*v1))*(Cos(z1)*(-2*A*md3*lamda**2*(Cos(delta) + 1.j*Sin(delta))*Sin(theta2) +\
+              Cos(theta2)*(2*md1*lamda*Cos(theta3) - md2*(-2 + lamda**2)*Sin(theta3))) + \
+              Sin(z1)*(-Cos(phi1)*(2*A*md3*lamda**3*((-1 + rho)*Cos(delta) + eta*Sin(delta))*\
+              Sin(theta2) + Cos(theta2)*(md1*(-2 + lamda**2)*Cos(theta3) + 2*md2*lamda*Sin(theta3)))\
+              + 1.j*(2*A*md3*lamda**3*(eta*Cos(delta - phi1) - (-1 + rho)*Sin(delta - phi1) - \
+              1.j* (eta* Cos(delta) + Sin(delta) - rho*Sin(delta))*Sin(phi1))*Sin(theta2) + \
+              Cos(theta2)*Sin(phi1)*(md1*(-2 + lamda**2)*Cos(theta3) + 2*md2*lamda*\
+              Sin(theta3)))))
+
+
+    Y1d22 = -(1/(Sqrt(2)*v1))*(Sin(z1)*(Cos(phi1) -1.j*Sin(phi1))*(Cos(theta1)*(2*md2*\
+              lamda*Cos(theta3) - md1*(-2 + lamda**2)*Sin(theta3)) +Sin(theta1)*(2*A*\
+              md3*lamda**3*(-1 -1.j*eta + rho)*Cos(theta2) + (-Cos(delta) + 1.j*Sin(delta))*\
+              Sin(theta2)*(md1*(-2 + lamda**2)*Cos(theta3) + 2*md2*lamda*Sin(theta3)))) + \
+              Cos(z1)*(Cos(theta1)*(md2*(-2 + lamda**2)*Cos(theta3) + 2*md1*lamda*Sin(theta3)) + \
+              Sin(theta1)*(2*A*md3*lamda**2*Cos(theta2) + (Cos(delta) - 1.j*Sin(delta))*Sin(theta2)*\
+              (2*md1*lamda*Cos(theta3) - md2*(-2 + lamda**2)*Sin(theta3)))))
+
+    Y1d23 = -(1/(Sqrt(2)*v1))*(-Sin(z1)*(Cos(phi1) - 1.j*Sin(phi1))*(Sin(theta1)*(2*md2*\
+            lamda*Cos(theta3) - md1*(-2 + lamda**2)*Sin(theta3)) + Cos(theta1)*(2*A*md3*lamda**3*\
+            (1 + 1.j*eta - rho)*Cos(theta2) + (Cos(delta) - 1.j*Sin(delta))*Sin(theta2)*\
+            (md1*(-2 + lamda**2)*Cos(theta3) + 2*md2*lamda*Sin(theta3)))) - Cos(z1)*(Sin(theta1)*\
+            (md2*(-2 + lamda**2)*Cos(theta3) + 2*md1*lamda*Sin(theta3)) + Cos(theta1)*\
+            (-2*A*md3*lamda**2*Cos(theta2) + (-Cos(delta) + 1.j*Sin(delta))*Sin(theta2)*\
+            (2*md1*lamda*Cos(theta3) - md2*(-2 + lamda**2)*Sin(theta3)))))
+
+    Y2d31 = (1/v2)*Sqrt(2)*(md3*(Cos(delta) + 1.j*Sin(delta))*Sin(theta2) + A*\
+              lamda**2*Cos(theta2)*(md1*lamda*(1.j* eta + rho)* Cos(theta3) + md2*Sin(theta3)))
+
+    Y2d32 = (1/v2)*Sqrt(2)*(A*lamda**2*Cos(theta1)*(md2*Cos(theta3) + md1*lamda*(-1.j*eta - rho)*\
+              Sin(theta3)) + Sin(theta1)*(md3*Cos(theta2) - 1.j* A*lamda**2*(Cos(delta) - 1.j*\
+              Sin(delta))*Sin(theta2)*(md1*lamda*(eta - 1.j*rho)*Cos(theta3) - 1.j*md2*Sin(theta3))))
+
+    Y2d33 = (1/v2)*Sqrt(2)*(A*lamda**2*Sin(theta1)*(-md2*Cos(theta3) + md1*lamda*\
+            (1.j* eta + rho)* Sin(theta3)) + Cos(theta1)*(md3*Cos(theta2) - 1.j* A* \
+            lamda**2*(Cos(delta) - 1.j* Sin(delta))* Sin(theta2)*(md1*lamda*(eta - 1.j*rho)*\
+            Cos(theta3) - 1.j*md2*Sin(theta3))))
+
+    #-------------------------------------------------------------------------------
+
+    Y1u11 = -((Sqrt(2)*(mu1*Cos(z1)*Cos(z2) + mu2*Sin(z1)*Sin(z2)*(Cos(phi1 - phi2) + 1.j*Sin(phi1 - phi2))))/v1)
+
+    Y1u12 = (Sqrt(2)*(mu2*Cos(z2)*Sin(z1)*(Cos(phi1) + 1.j*Sin(phi1)) - mu1*Cos(z1)*Sin(z2)*(Cos(phi2) +\
+             1.j*Sin(phi2))))/v1
+
+    Y1u21 = (Sqrt(2)*(-mu1*Cos(z2)*Sin(z1)*(Cos(phi1) - 1.j*Sin(phi1)) + mu2*Cos(z1)*Sin(z2)*(Cos(phi2) - \
+            1.j*Sin(phi2))))/v1
+
+    Y1u22 = -((Sqrt(2)*(mu2*Cos(z1)*Cos(z2) + mu1*Sin(z1)*Sin(z2)*(Cos(phi1 - phi2) - 1.j*Sin(phi1 - phi2))))/v1)
+
+    Y2u33 = -((Sqrt(2)*mu3)/v2)
+
+    #-------------------------------------------------------------------------------
+
+
+    return Y1u11,Y1u12,Y1u21,Y1u22,Y2u33,Y1d11,Y1d12,Y1d13,Y1d21,Y1d22,Y1d23,\
+            Y2d31,Y2d32,Y2d33,vlu,vru,vld,vrd,ANGLES
 
 
 
-
-# In[22]:
-
-
-def extended_Lepton_mixing_matrix(Oxy):
-    Zeros = np.zeros((3, 3))
-    u = np.random.uniform(0.0,2*np.pi)
-    u1 = np.random.uniform(0.0,2*np.pi)
-    u2 = np.random.uniform(0.0,2*np.pi)
-    u3 = np.random.uniform(0.0,2*np.pi)
-    V1 = np.array([[np.cos(u),np.sin(u),0],
-              [-np.sin(u),np.cos(u),0],
-              [0,0,1]])
-    V2 = np.array([[exp(u1* 1.j).rewrite(cos).expand(),0,0],
-              [0, np.cos(u2),np.sin(u2)],
-              [0,-np.sin(u2),np.cos(u2)]])
-    V3 = np.array([[np.cos(u3),-np.sin(u3),0],
-              [np.sin(u3),np.cos(u3),0],
-              [0,0,1]])
-    V = np.dot(np.dot(V1,V2),V3)
-
-    uni_test1 = np.dot(V,V.conj().T)
-
-    j1 = np.concatenate((Oxy, Zeros.T), axis=1)
-    j2 = np.concatenate((Zeros, V.T), axis=1)
-    ExUel = np.concatenate((j1, j2), axis=0)
-    return(ExUel,u,u1,u2,u3)
 
 def numeri_neutrino_masses(v1,v2,v3):
     #Ya = np.random.uniform(0,1)*10**3
@@ -460,7 +633,6 @@ def Lepton_neutrino_Yukawa_couplings_BGL(v_s,v_u,v_d):
     #definitios
     #mass parameters
     #------------------
-    Me,Mmu,Mtau = symbols('Me,Mmu,Mtau')
     Me = np.array(0.000485289396)
     Mmu =np.array( 0.1024673155)
     Mtau = np.array(1.74215)
@@ -473,62 +645,61 @@ def Lepton_neutrino_Yukawa_couplings_BGL(v_s,v_u,v_d):
     v2 = v_d
     v3 = vs
     #------------------
-    #math.radians(np.random.uniform(0,))
-    z1,phi = symbols('z1,phi',real=True)
+
 
     z1 = np.random.uniform(0,2*np.pi)
-    phi = np.arctan((1.0j * v1 * v2 * np.sqrt(m1**2 * np.cos(z1)**2 + m2**2 *np.sin(z1)**2))/(np.sqrt(v1**2)*np.sqrt(+0.j+-v2**2*(m1**2 + m2**2 + (m1**2 - m2**2)* np.cos(2*z1)))))
+    z2 = np.random.uniform(0,2*np.pi)
+    phi1 = np.random.uniform(0,2*np.pi)
+    phi2 = np.random.uniform(0,2*np.pi)
+    #phi4 = np.random.uniform(0,2*np.pi)
 
     #U_e_L
 
-    Oxy =np.array([[cos(z1), -cos(phi)*sin(z1) - 1j * sin(z1) * sin(phi),0],
-                   [  cos(phi)*sin(z1) - 1.0j * sin(z1) * sin(phi), cos(z1), 0],
-                   [0, 0, 1]])
+    OeL =np.array([[Cos(z1), -Cos(phi1)*Sin(z1) - 1j* Sin(z1)*Sin(phi1), 0],
+                    [Cos(phi1)*Sin(z1) - 1j* Sin(z1)*Sin(phi1),Cos(z1), 0],
+                    [0, 0, 1]])
 
 
+    OeR =np.array([[Cos(z2), -Cos(phi2)*Sin(z2) - 1j* Sin(z2)*Sin(phi2), 0],
+                    [Cos(phi2)*Sin(z2) - 1j* Sin(z2)*Sin(phi2),Cos(z2), 0],
+                    [0, 0, 1]])
 
-    Ye1 = -(np.sqrt(2)*np.sqrt(m1**2 * np.cos(z1)**2 + m2**2 * np.sin(z1)**2))/np.sqrt(v1**2)
-    Ye2 = -((np.sqrt(2)*m1*m2)/(np.sqrt(v1**2 *(m1**2 * np.cos(z1)**2 + m2**2 * np.sin(z1)**2))))
-    Ye3 = -(np.sqrt(2)*m3/v2)
+    Y1e11 = (1/v1)*(Sqrt(2)* (m1* Cos(z1)* Cos(z2) + m2* Cos(phi1 - phi2)* \
+    Sin(z1)* Sin(z2)) + 1.j *Sqrt(2)*m2* Sin(z1)* Sin(z2)* Sin(phi1 - phi2))
 
-    Ye4 = - ((1.0j * (m1 - m2)*(m1 + m2) * np.sin(2*z1))/np.sqrt(+1.0j -v2**2 * (m1**2 + m2**2 + (m1 - m2)*(m1 + m2) *np.cos(2*z1))))
+    Y1e22 = (1/v1)*(Sqrt(2)*(m2*Cos(z1)*Cos(z2) + m1*Cos(phi1 - phi2)* Sin(z1)*\
+    Sin(z2)) - 1.j* Sqrt(2)*m1* Sin(z1)* Sin(z2)* Sin(phi1 - phi2))
 
-    Ye = np.array([np.real(Ye1),np.real(Ye2),np.real(Ye3),np.real(Ye4)])
-    YeIM = np.array([np.imag(Ye1),np.imag(Ye2),np.imag(Ye3),np.imag(Ye4)])
+    Y1e12 = (1/v1)*(-Sqrt(2)*(m2* Cos(z2)* Cos(phi1)* Sin(z1) - m1* Cos(z1)* \
+    Cos(phi2)* Sin(z2)) - 1.j* Sqrt(2)* (m2* Cos(z2)* Sin(z1)* Sin(phi1) - m1* \
+    Cos(z1)* Sin(z2)* Sin(phi2)))
 
-    me = np.array([[(v1*Ye1)/np.sqrt(2), 0, 0],
-                    [(v2*Ye4)/np.sqrt(2), (v1*Ye2)/np.sqrt(2), 0],
-                    [0, 0, (v2*Ye3)/np.sqrt(2)]])
-    De = np.array([[Me,0,0],
-                    [0,Mmu,0],
-                    [0,0,Mtau]])
+    Y1e21 = (1/v1)*(Sqrt(2)* (m1* Cos(z2)* Cos(phi1)* Sin(z1) - m2* Cos(z1)* \
+    Cos(phi2)* Sin(z2)) - 1.j* Sqrt(2)* (m1* Cos(z2)* Sin(z1)* Sin(phi1) - m2*\
+    Cos(z1)* Sin(z2)* Sin(phi2)))
 
-    De2 =  np.dot(De,De.conj().T)
-    me2 = np.dot(me,me.conj().T)
+    Y2e33 = ((Sqrt(2)* m3)/v2)
 
+    Y1l11, Y1l12, Y1l21, Y1l22, Y2l33 = Y1e11, Y1e12, Y1e21, Y1e22, Y2e33
 
+    #heavy neutrino masses
+    #------------------
+    mheavy1 = pow(10,4)
+    mheavy2 = pow(10,4)
+    Yb = (mheavy1 - mheavy2)/(Sqrt(2)* vs)
+    Yc = -((Sqrt(mheavy1)*Sqrt(mheavy2))/vs)
 
+    Y1n11 = pow(10,-6)
+    Y1n12 = pow(10,-6)
+    Y1n21 = pow(10,-6)
+    Y1n22 = pow(10,-6)
+    Y2n33 = pow(10,-6)
+    B11,B12,B21,B22 = Yb,Yb,Yb,Yb
+    C13,C23,C31,C32 = Yc,Yc,Yc,Yc
 
+    return OeL,OeR,Y1l11, Y1l12, Y1l21, Y1l22, Y2l33, Y1n11, Y1n12, Y1n21, Y1n22,\
+     Y2n33, B11, B12, B21, B22, C13, C23, C31, C32
 
-    #Neutrino massws
-    Ml_1,Ml_2,Ml_3 = symbols('Ml_1,Ml_2,Ml_3')
-    Mhe_1,Mhe_2,Mhe_3 = symbols('Mhe_1,Mhe_2,Mhe_3')
-
-    #Neutrino massws
-    Ml_1,Ml_2,Ml_3 = symbols('Ml_1,Ml_2,Ml_3')
-    Mhe_1,Mhe_2,Mhe_3 = symbols('Mhe_1,Mhe_2,Mhe_3')
-
-
-    #ExUel,u,u1,u2,u3 = extended_Lepton_mixing_matrix(Oxy)
-
-    #vPMNS,UDIREITOS,U_PMNSp = extended_PMNS_matrix()
-
-    #Unu,Ml_1,Ml_2,Ml_3,Mhe_1,Mhe_2,Mhe_3,Yv1,Yv2,Yv3,Yv4,Ya,Yb1,Yb,Sols1,diag_Fv = neutrino_masses(ExUel,U_PMNSp,v1,v2,v3)
-    #Ml_1,Ml_2,Ml_3,Mhe_1,Mhe_2,Mhe_3,Yv1,Yv2,Yv3,Yv4,Ya,Yb1,Yb = old_neutrino_masses(v1,v2,v3)
-    Ml_1,Ml_2,Ml_3,Mhe_1,Mhe_2,Mhe_3,Yv1,Yv2,Yv3,Yv4,Ya,Yb1,Yb = numeri_neutrino_masses(v1,v2,v3)
-
-
-    return(Ye,YeIM,Oxy,Ml_1,Ml_2,Ml_3,Mhe_1,Mhe_2,Mhe_3,Yv1,Yv2,Yv3,Yv4,Ya,Yb1,Yb)
 
 
 # In[27]:
@@ -685,8 +856,9 @@ def cleaning_functiont():
 
 #creation of a function like the write_mg_cards fo the LesHouches file
 def write_spheno_LesHouches(gl1, gl2, gl3, gl4, gl_s1,gl_s2, gl_s3,gmu_3,gmusb,\
-galpha_1,galpha_2,galpha_3,galpha_4,v3,Yd1_R,Yd1_I,Yd2_R,Yd2_I,Ye,YeIM,\
-Yv1,Yv2,Yv3,Yv4,Ya,Yb,Yb1,v_u,v_d):
+galpha_1,galpha_2,galpha_3,galpha_4,v3,Y1d11, Y1d12, Y1d13, Y1d21, Y1d22, Y1d23,\
+Y2d31, Y2d32, Y2d33, Y1u11, Y1u12, Y1u21, Y1u22, Y2u33,Y1l11, Y1l12, Y1l21, Y1l22,\
+Y2l33, Y1n11, Y1n12, Y1n21, Y1n22, Y2n33, B11, B12, B21, B22, C13, C23, C31, C32,v_u,v_d):
 #creation of a function like the write_mg_cards fo the LesHouches file
      with open(os.path.join(Running_Env,'spheno','LesHouches.in.BGLNCS'),'w') as f:
         f.write("""
@@ -729,33 +901,36 @@ Block MINPAR  # Input parameters
 20   {5}    # Y1d23input
 21   {6}    # Y2d31input
 22   {7}    # Y2d32input
-23   {8}    # Y2d33input""".format(Yd1_R[0][0],Yd1_R[0][1],Yd1_R[0][2],Yd1_R[1][0],Yd1_R[1][1],Yd1_R[1][2],Yd2_R[2][0],Yd2_R[2][1],Yd2_R[2][2]))
+23   {8}    # Y2d33input""".format(np.real(Y1d11),np.real(Y1d12),np.real(Y1d13),\
+np.real(Y1d21),np.real(Y1d22),np.real(Y1d23),np.real(Y2d31),np.real(Y2d32),np.real(Y2d33)))
         f.write("""
 24   {0}    # Y1u11input
 25   {1}    # Y1u12input
 26   {2}    # Y1u21input
 27   {3}    # Y1u22input
-28   {4}    # Y2u33input""".format(Yu1[0][0],Yu1[0][1],Yu1[1][0],Yu1[1][1],Yu2[2][2]))
+28   {4}    # Y2u33input""".format(np.real(Y1u11),np.real(Y1u12),np.real(Y1u21),np.real(Y1u22),np.real(Y2u33)))
         f.write("""
  29   {0}    # Y1e11input
  30   {1}    # Y1e12input
  31   {2}    # Y1e21input
  32   {3}    # Y1e22input
- 33   {4}    # Y2e33input""".format(Ye[0],Ye[1],0,Ye[2],Ye[3]))
+ 33   {4}    # Y2e33input""".format(np.real(Y1l11),np.real(Y1l12),np.real(Y1l21),\
+ np.real(Y1l22),np.real(Y2l33)))
         f.write("""
  34   {0}    # Y1n11input
- 35   {2}    # Y1n12input
- 36   0    # Y1n21input
- 37   {1}    # Y1n22input
- 38   {3}    # Y2n33input
- 39   {4}    # B11input
- 40   0    # B12input
- 41   0    # B21input
- 42   0    # B22input
- 43   0    # C13input
- 44   {5}    # C23input
- 45   0    # C31input
- 46   {6}    # C32input""".format(Yv1,Yv2,Yv3,Yv4,Ya,Yb,Yb1,0,0,0,0,0,0))
+ 35   {1}    # Y1n12input
+ 36   {2}    # Y1n21input
+ 37   {3}    # Y1n22input
+ 38   {4}    # Y2n33input
+ 39   {5}    # B11input
+ 40   {6}    # B12input
+ 41   {7}    # B21input
+ 42   {8}    # B22input
+ 43   {9}    # C13input
+ 44   {10}    # C23input
+ 45   {11}    # C31input
+ 46   {12}    # C32input""".format(Y1n11, Y1n12, Y1n21, Y1n22, Y2n33, B11, B12, \
+ B21, B22, C13, C23, C31, C32))
         f.write("""
  47   {}    # v1input
  48   {}    # v2input""".format(v_u,v_d))
@@ -769,19 +944,21 @@ Block IMMINPAR  # Input parameters
  20   {5}    # Y1d23input
  21   {6}    # Y2d31input
  22   {7}    # Y2d32input
- 23   {8}    # Y2d33input""".format(Yd1_I[0][0],Yd1_I[0][1],Yd1_I[0][2],Yd1_I[1][0],Yd1_I[1][1],Yd1_I[1][2],Yd2_I[2][0],Yd2_I[2][1],Yd2_I[2][2]))
+ 23   {8}    # Y2d33input""".format(np.imag(Y1d11),np.imag(Y1d12),np.imag(Y1d13),\
+ np.imag(Y1d21),np.imag(Y1d22),np.imag(Y1d23),np.imag(Y2d31),np.imag(Y2d32),np.imag(Y2d33)))
         f.write("""
  24    {0}  # Y1u11input
  25    {1}    # Y1u12input
  26    {2}    # Y1u21input
  27    {3}    # Y1u22input
- 28    {4}    # Y2u33input""".format(0,0,0,0,0))
+ 28    {4}    # Y2u33input""".format(np.imag(Y1u11),np.imag(Y1u12),np.imag(Y1u21),np.imag(Y1u22),np.imag(Y2u33)))
         f.write("""
  29   {0}    # Y1e11input
  30   {1}    # Y1e12input
  31   {2}    # Y1e21input
  32   {3}    # Y1e22input
- 33   {4}    # Y2e33input""".format(YeIM[0],0,YeIM[1],YeIM[2],YeIM[3]))
+ 33   {4}    # Y2e33input""".format(np.imag(Y1l11),np.imag(Y1l12),np.imag(Y1l21),\
+ np.imag(Y1l22),np.imag(Y2l33)))
         f.write("""
 Block SPhenoInput   # SPheno specific input
   1 -1              # error level
@@ -855,8 +1032,8 @@ Block DECAYOPTIONS   # Options to turn on/off specific decays
 
 
 #creation of a function like the write_mg_cards fo the LesHouches file
-def write_input_LHE(Mhh1,Mhh2,Mhh3,MAh2,M_Ah3,MHm,Ml_1,Ml_2,Ml_3,Mhe_1,Mhe_2,Mhe_3,\
-beta,a2,a3,delta,gamma1):
+def write_input_LHE(Mhh1,Mhh2,Mhh3,MAh2,M_Ah3,MHm,beta,a2,a3,delta,gamma1,\
+OeL,OeR,Oa,vlu,vru,vld,vrd,ANGLES):
 #creation of a function like the write_mg_cards fo the LesHouches file
      with open(os.path.join(Resutls_Env,'input_LHE.BGLNCS'),'w') as f:
         f.write("""
@@ -878,7 +1055,7 @@ light neutrino 2: {1}
 light neutrino 3: {2}
 heavy neutrino 1: {3}
 heavy neutrino 2: {4}
-heavy neutrino 3: {5}""".format(Ml_1,Ml_2,Ml_3,Mhe_1,Mhe_2,Mhe_3))
+heavy neutrino 3: {5}""".format(0,0,0,0,0,0))
         f.write("""
 #----------------------------------------------------------
 # Angles & vevs information:
@@ -887,7 +1064,174 @@ beta:  {0}
 a2: {1}
 a3: {2}
 delta: {3}
-gamma1: {4} """.format(beta,a2,a3,delta,gamma1))
+gamma1: {4}
+z1:  {5}
+z2:  {6}
+phi1:  {7}
+phi2:  {8}
+theta1:  {9}
+theta2:  {10}
+theta3:  {11}
+Yuka_delta: {12}""".format(beta,a2,a3,delta,gamma1,ANGLES[0],ANGLES[1],ANGLES[2]\
+,ANGLES[3],ANGLES[4],ANGLES[5],ANGLES[6],ANGLES[6]))
+        f.write("""
+#----------------------------------------------------------
+#Mixing Matrices
+#----------------------------------------------------------""")
+        f.write("""
+ZH_SCALARMIX :
+1 1: {0}
+1 2: {1}
+1 3: {2}
+2 1: {3}
+2 2: {4}
+2 3: {5}
+3 1: {6}
+3 2: {7}
+3 3: {8}""".format(Oa[0,0],Oa[0,1],Oa[0,2],Oa[1,0],Oa[1,1],Oa[1,2],Oa[2,0],Oa[2,1],Oa[2,2]))
+        f.write("""
+UDLMIX :
+1 1: {0}
+1 2: {1}
+1 3: {2}
+2 1: {3}
+2 2: {4}
+2 3: {5}
+3 1: {6}
+3 2: {7}
+3 3: {8}""".format(np.real(vld[0,0]),np.real(vld[0,1]),np.real(vld[0,2]),\
+            np.real(vld[1,0]),np.real(vld[1,1]),np.real(vld[1,2]),\
+            np.real(vld[2,0]),np.real(vld[2,1]),np.real(vld[2,2])))
+        f.write("""
+IMUDLMIX :
+1 1: {0}
+1 2: {1}
+1 3: {2}
+2 1: {3}
+2 2: {4}
+2 3: {5}
+3 1: {6}
+3 2: {7}
+3 3: {8}""".format(np.imag(vld[0,0]),np.imag(vld[0,1]),np.imag(vld[0,2]),\
+            np.imag(vld[1,0]),np.imag(vld[1,1]),np.imag(vld[1,2]),\
+            np.imag(vld[2,0]),np.imag(vld[2,1]),np.imag(vld[2,2])))
+        f.write("""
+UDRMIX :
+1 1: {0}
+1 2: {1}
+1 3: {2}
+2 1: {3}
+2 2: {4}
+2 3: {5}
+3 1: {6}
+3 2: {7}
+3 3: {8}""".format(np.real(vrd[0,0]),np.real(vrd[0,1]),np.real(vrd[0,2]),\
+    np.real(vrd[1,0]),np.real(vrd[1,1]),np.real(vrd[1,2]),\
+    np.real(vrd[2,0]),np.real(vrd[2,1]),np.real(vrd[2,2])))
+        f.write("""
+IMUDRMIX :
+1 1: {0}
+1 2: {1}
+1 3: {2}
+2 1: {3}
+2 2: {4}
+2 3: {5}
+3 1: {6}
+3 2: {7}
+3 3: {8}""".format(np.imag(vrd[0,0]),np.imag(vrd[0,1]),np.imag(vrd[0,2]),\
+    np.imag(vrd[1,0]),np.imag(vrd[1,1]),np.imag(vrd[1,2]),\
+    np.imag(vrd[2,0]),np.imag(vrd[2,1]),np.imag(vrd[2,2])))
+        f.write("""
+UULMIX :
+1 1: {0}
+1 2: {1}
+1 3: {2}
+2 1: {3}
+2 2: {4}
+2 3: {5}
+3 1: {6}
+3 2: {7}
+3 3: {8}""".format(np.real(vlu[0,0]),np.real(vlu[0,1]),np.real(vlu[0,2]),\
+            np.real(vlu[1,0]),np.real(vlu[1,1]),np.real(vlu[1,2]),\
+            np.real(vlu[2,0]),np.real(vlu[2,1]),np.real(vlu[2,2])))
+        f.write("""
+IMUULMIX :
+1 1: {0}
+1 2: {1}
+1 3: {2}
+2 1: {3}
+2 2: {4}
+2 3: {5}
+3 1: {6}
+3 2: {7}
+3 3: {8}""".format(np.imag(vlu[0,0]),np.imag(vlu[0,1]),np.imag(vlu[0,2]),\
+            np.imag(vlu[1,0]),np.imag(vlu[1,1]),np.imag(vlu[1,2]),\
+            np.imag(vlu[2,0]),np.imag(vlu[2,1]),np.imag(vlu[2,2])))
+        f.write("""
+UURMIX :
+1 1: {0}
+1 2: {1}
+1 3: {2}
+2 1: {3}
+2 2: {4}
+2 3: {5}
+3 1: {6}
+3 2: {7}
+3 3: {8}""".format(np.real(vru[0,0]),np.real(vru[0,1]),np.real(vru[0,2]),\
+    np.real(vru[1,0]),np.real(vru[1,1]),np.real(vru[1,2]),\
+    np.real(vru[2,0]),np.real(vru[2,1]),np.real(vru[2,2])))
+        f.write("""
+UELMIX :
+1 1: {0}
+1 2: {1}
+1 3: {2}
+2 1: {3}
+2 2: {4}
+2 3: {5}
+3 1: {6}
+3 2: {7}
+3 3: {8}""".format(np.real(OeL[0,0]),np.real(OeL[0,1]),np.real(OeL[0,2]),
+                    np.real(OeL[1,0]),np.real(OeL[1,1]),np.real(OeL[1,2]),
+                    np.real(OeL[2,0]),np.real(OeL[2,1]),np.real(OeL[2,2])))
+        f.write("""
+IMUELMIX :
+1 1: {0}
+1 2: {1}
+1 3: {2}
+2 1: {3}
+2 2: {4}
+2 3: {5}
+3 1: {6}
+3 2: {7}
+3 3: {8}""".format(np.imag(OeL[0,0]),np.imag(OeL[0,1]),np.imag(OeL[0,2]),
+                    np.imag(OeL[1,0]),np.imag(OeL[1,1]),np.imag(OeL[1,2]),
+                    np.imag(OeL[2,0]),np.imag(OeL[2,1]),np.imag(OeL[2,2])))
+        f.write("""
+UERMIX :
+1 1: {0}
+1 2: {1}
+1 3: {2}
+2 1: {3}
+2 2: {4}
+2 3: {5}
+3 1: {6}
+3 2: {7}
+3 3: {8}""".format(np.real(OeR[0,0]),np.real(OeR[0,1]),np.real(OeR[0,2]),
+                    np.real(OeR[1,0]),np.real(OeR[1,1]),np.real(OeR[1,2]),
+                    np.real(OeR[2,0]),np.real(OeR[2,1]),np.real(OeR[2,2])))
+        f.write("""
+IMUERMIX :
+1 1: {0}
+1 2: {1}
+1 3: {2}
+2 1: {3}
+2 2: {4}
+2 3: {5}
+3 1: {6}
+3 2: {7}
+3 3: {8}""".format(np.imag(OeR[0,0]),np.imag(OeR[0,1]),np.imag(OeR[0,2]),
+                    np.imag(OeR[1,0]),np.imag(OeR[1,1]),np.imag(OeR[1,2]),
+                    np.imag(OeR[2,0]),np.imag(OeR[2,1]),np.imag(OeR[2,2])))
 
 
 
@@ -944,11 +1288,11 @@ def RanAngles():
 def higgsSQ_masses():
     mass = np.random.uniform(200**2,700**2)
     mH1sq = 125.09**2
-    mH2sq = np.random.uniform(mass - 0.5*mass ,mass + 0.5*mass)
-    mH3sq = np.random.uniform(mass - 0.5*mass ,mass + 0.5*mass)
-    mCh = np.random.uniform(mass - 0.5*mass ,mass + 0.5*mass)
-    mAh2sq = np.random.uniform(mass - 0.5*mass ,mass + 0.5*mass)
-    mAh3sq = np.random.uniform(mass - 0.5*mass ,mass + 0.5*mass)
+    mH2sq = np.random.uniform(pow(130,2),pow(500,2))
+    mH3sq = np.random.uniform(pow(130,2),pow(500,2))
+    mCh = np.random.uniform(pow(80,2),pow(500,2))
+    mAh2sq = np.random.uniform(pow(10,-7),pow(10,-5))
+    mAh3sq = np.random.uniform(pow(80,2),pow(500,2))
     if mAh2sq > mAh3sq:
         mAh2sq , mAh3sq = mAh3sq , mAh2sq
     if mH2sq > mH3sq:
@@ -963,7 +1307,7 @@ def VEVs(beta):
     v = 246
     v_u = np.cos(beta)*v
     v_d = np.sin(beta)*v
-    v3 = np.random.uniform(pow(10,3),9*pow(10,3))
+    v3 = np.random.uniform(pow(10,2),9*pow(10,2))
     return v,v_u,v_d,v3
 
 def Fanction_alphas():
@@ -1026,17 +1370,19 @@ while W_counter > counter:
                             if break_code1=='go':
 
                                 #The line below assigns the Yukawa couplings to variables for quarks.
-                                Yd1_R,Yd2_R,Yu1,Yu2,v_u,v_d,vlu,vru,vld,vrd,Yd1_I,Yd2_I = Yukawa_alaysis(beta,v3)
+                                Y1u11,Y1u12,Y1u21,Y1u22,Y2u33,Y1d11,Y1d12,Y1d13,Y1d21,Y1d22,Y1d23,\
+                                Y2d31,Y2d32,Y2d33,vlu,vru,vld,vrd,ANGLES= NewYukawa_alaysis(beta,v3)
 
                                 #The line below assigns the Lepton & Neutrino Yukawa couplings to variables.
-                                Ye,YeIM,Oxy,Ml_1,Ml_2,Ml_3,Mhe_1,Mhe_2,Mhe_3,Yv1,Yv2,Yv3,Yv4,Ya,Yb1,Yb = Lepton_neutrino_Yukawa_couplings_BGL(v3,v_u,v_d)
-
+                                OeL,OeR,Y1l11, Y1l12, Y1l21, Y1l22, Y2l33, Y1n11, Y1n12, Y1n21, Y1n22, Y2n33, B11, B12, \
+                                B21, B22, C13, C23, C31, C32= Lepton_neutrino_Yukawa_couplings_BGL(v3,v_u,v_d)
 
 
                                 #This line, creates an spheno_LesHouches, which will be latter used into SPheno
                                 write_spheno_LesHouches(gl1, gl2, gl3, gl4, gl_s1,gl_s2, gl_s3,gmu_3,gmusb,\
-                                galpha_1,galpha_2,galpha_3,galpha_4,v3,Yd1_R,Yd1_I,Yd2_R,Yd2_I,Ye,YeIM,\
-                                Yv1,Yv2,Yv3,Yv4,Ya,Yb,Yb1,v_u,v_d)
+                                galpha_1,galpha_2,galpha_3,galpha_4,v3,Y1d11, Y1d12, Y1d13, Y1d21, Y1d22, Y1d23,\
+                                Y2d31, Y2d32, Y2d33, Y1u11, Y1u12, Y1u21, Y1u22, Y2u33,Y1l11, Y1l12, Y1l21, Y1l22,\
+                                Y2l33, Y1n11, Y1n12, Y1n21, Y1n22, Y2n33, B11, B12, B21, B22, C13, C23, C31, C32,v_u,v_d)
                                 #This line, creates an FS_LesHouches, which will be latter used into SPheno
                                 #write_FlexibleSUSY_LesHouches(gl1, gl2, gl3, gl4, gAd2, gd1, gd2, gd3, g4, g41, g14, v3,Yd1_R,Yd2_R,Yu1,Yu2,Ye,Yv,Yvv,v_u,v_d,beta)
 
@@ -1049,9 +1395,8 @@ while W_counter > counter:
                                 #os.system(FS_BGL_Running_comand)
 
 
-                                #Oa = ZH_matrix(delta,beta,a2,a3)
-                                write_input_LHE(Mhh1,Mhh2,Mhh3,MAh2,M_Ah3,MHm,Ml_1,Ml_2,Ml_3,Mhe_1,Mhe_2,Mhe_3,\
-                                beta,a2,a3,delta,gamma1)
+                                Oa = ZH_matrix(delta,beta,a2,a3)
+                                write_input_LHE(Mhh1,Mhh2,Mhh3,MAh2,M_Ah3,MHm,beta,a2,a3,delta,gamma1,OeL,OeR,Oa,vlu,vru,vld,vrd,ANGLES)
 
 
 
