@@ -193,7 +193,12 @@ def MINPAR_SPheno_reader(i,j,SPheno_spc_File):
     Y1n33 =float(A[38].split()[1])
 
     B11 = float(A[39].split()[1])
+    B12 = float(A[40].split()[1])
+    B21 = float(A[41].split()[1])
+    B22 = float(A[42].split()[1])
+    C13 = float(A[43].split()[1])
     C23 = float(A[44].split()[1])
+    C31 = float(A[45].split()[1])
     C32 = float(A[46].split()[1])
 
 
@@ -203,7 +208,7 @@ def MINPAR_SPheno_reader(i,j,SPheno_spc_File):
     YUre = [Y1u11,Y1u12,Y1u21,Y1u22,Y2u33]
     YRre = [Y1e11,Y1e12,Y1e22,Y1e33]
     YlightN = [Y1n11,Y1n12,Y1n22,Y1n33]
-    YheavyN = [B11,C23,C32]
+    YheavyN = [B11,B12,B21,B22,C13,C23,C31,C32]
 
     return quartics,ancouplings,YDre,YUre,YRre,YlightN,YheavyN
 
@@ -235,10 +240,19 @@ def imMINPAR_SPheno_reader(i,j,SPheno_spc_File):
     imY2d31  =float(A[7].split()[1])
     imY2d32  =float(A[8].split()[1])
     imY2d33  =float(A[9].split()[1])
-    imY2e33  =float(A[10].split()[1])
+    imY1u11  =float(A[10].split()[1])
+    imY1u12  =float(A[11].split()[1])
+    imY1u21  =float(A[12].split()[1])
+    imY1u22  =float(A[13].split()[1])
+    imY1e11  =float(A[14].split()[1])
+    imY1e12  =float(A[15].split()[1])
+    imY1e21  =float(A[16].split()[1])
+    imY1e22  =float(A[17].split()[1])
 
 
-    imYukawas = [imY1d11,imY1d12,imY1d13,imY1d21,imY1d22,imY1d23,imY2d31,imY2d32,imY2d33,imY2e33]
+
+    imYukawas = [imY1d11,imY1d12,imY1d13,imY1d21,imY1d22,imY1d23,imY2d31,imY2d32,\
+    imY2d33,imY1u11,imY1u12,imY1u21,imY1u22,imY1e11,imY1e12,imY1e21,imY1e22]
 
 
     return imYukawas
