@@ -9,6 +9,8 @@ import subprocess
 import sys
 import glob
 import numpy as np
+import flavio
+from wilson import Wilson
 
 cluster = True # If you run the scrip on the cluster
 from_batch_nu = 1
