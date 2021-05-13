@@ -22,24 +22,24 @@ if not cluster:
     FlexibleSUSY_BGL = os.path.join(FlexibleSUSY_Path,'models/THDMSBGL/run_THDMSBGL.x')
 
     #HiggsBound folder
-    HiggsBounds_Path = '/Users/vasileios_vatellis/higgsbounds/build'
+    HiggsBounds_Path = '~/higgsbounds/build'
     HiggsBounds = os.path.join(HiggsBounds_Path,'HiggsBounds')
 
 
     #HiggsSignal folder
-    HiggsSignals_Path = '/Users/vasileios_vatellis/higgssignals/build'
+    HiggsSignals_Path = '~/higgssignals/build'
     HiggsSignals = os.path.join(HiggsSignals_Path,'HiggsSignals')
 
 if cluster:
 
 
     #HiggsBound folder
-    HiggsBounds_Path = '/home/vasileios.vatellis@UA.PT/opt/higgsbounds/build'
+    HiggsBounds_Path = '~/opt/higgsbounds/build'
     HiggsBounds = os.path.join(HiggsBounds_Path,'HiggsBounds')
 
 
     #HiggsSignal folder
-    HiggsSignals_Path = '/home/vasileios.vatellis@UA.PT/opt/higgssignals/build'
+    HiggsSignals_Path = '~/opt/higgssignals/build'
     HiggsSignals = os.path.join(HiggsSignals_Path,'HiggsSignals')
 
 # ## Functions
@@ -270,14 +270,23 @@ def HiggsBounds_reader_limit_function(i,j):
 
     data_higgsbounds = 'batch_{}/Result_data/Spheno_output_Folder/point_{}/HiggsBounds_results.dat'.format(i,j)
     R = open( data_higgsbounds, 'r')
+    Chanel = False
+    pchanel = []
     for line in R:
+        if line.startswith('# channel numbers used in this file'):
+            Chanel = True
+            pchanel.append(line)
+         # channel numbers used in this file
+         #         527 : (p p)->h3 ->V V (combination) ((hep-ex) arXiv:1808.02380 (ATLAS))
+        if line.startswith('# (for full list of processes, see Key.dat)'):
+
         if not line.lstrip().startswith('#'):
             obsratio = float(line.split()[-2])
             HBresult = float(line.split()[-4])
             if float(line.split()[-2]) < 1 and HBresult == 1:
                 HiggsBounds_pass = True
             else :  HiggsBounds_pass = False
-    return HiggsBounds_pass, obsratio, HBresult
+    return HiggsBounds_pass, obsratio, HBresult,pchanel
 
 
 # In[5]:
@@ -435,7 +444,136 @@ def write_couplings_dat(Mylist,name):
 
 # ## Read Points
 
+def FlavioFun(i,j):
+    with open('batch_{}/Result_data/Spheno_output_Folder/point_{}/WC.BGLNCS_1.json'.format(i,j), 'r') as f:
+        myw = Wilson.load_wc(f)
+    BRBXsgammaNP,BRBXsgammaSM = flavio.np_prediction('BR(B->Xsgamma)', myw), flavio.sm_prediction('BR(B->Xsgamma)')
+    RatioBXsgamma = BRBXsgammaNP/BRBXsgammaSM
 
+    BRB0eeNP,BRB0eeSM = flavio.np_prediction('BR(B0->ee)', myw),flavio.sm_prediction('BR(B0->ee)')
+    RatioB0ee = BRB0eeNP / BRB0eeSM
+
+    BRBseeNP,BRBseeSM  = flavio.np_prediction('BR(Bs->ee)', myw), flavio.sm_prediction('BR(Bs->ee)')
+    RatioBsee = BRBseeNP / BRBseeSM
+
+    BRB0mumuNP,BRB0mumuSM = flavio.np_prediction('BR(B0->mumu)', myw),flavio.sm_prediction('BR(B0->mumu)')
+    RatioB0mumu = BRB0mumuNP / BRB0mumuSM
+
+    BRBsmumuNP,BRBsmumuSM = flavio.np_prediction('BR(Bs->mumu)', myw),flavio.sm_prediction('BR(Bs->mumu)')
+    RatioBsmumu = BRBsmumuNP / BRBsmumuSM
+
+    BRB0tautauNP,BRB0tautauSM = flavio.np_prediction('BR(B0->tautau)', myw),flavio.sm_prediction('BR(B0->tautau)')
+    RatioB0tautau = BRB0tautauNP / BRB0tautauSM
+
+    BRBstautauNP,BRBstautauSM = flavio.np_prediction('BR(Bs->tautau)', myw),flavio.sm_prediction('BR(Bs->tautau)')
+    RatioBstautau = BRBstautauNP / BRBstautauSM
+
+    DeltaMdNP,DeltaMdSM = flavio.np_prediction('DeltaM_d', myw),flavio.sm_prediction('DeltaM_d')
+    RatioDeltaMd = DeltaMdNP / DeltaMdSM
+
+    DeltaMsNP,DeltaMsSM = flavio.np_prediction('DeltaM_s', myw),flavio.sm_prediction('DeltaM_s')
+    RatioDeltaMs = DeltaMsNP / DeltaMsSM
+
+    RBpmueNP,RBpmueSM = flavio.np_prediction('Rmue(B+->K*ll)', myw, q2=3),flavio.sm_prediction('Rmue(B+->K*ll)', q2=3)
+    RatioRBpmue = RBpmueNP / RBpmueSM
+
+    RB0mueNP,RB0mueSM = flavio.np_prediction('Rmue(B0->K*ll)', myw, q2=3),flavio.sm_prediction('Rmue(B0->K*ll)', q2=3)
+    RatioRB0mue = RB0mueNP / RB0mueSM
+
+    eps_KNP,eps_KSM = flavio.np_prediction('eps_K', myw),flavio.sm_prediction('eps_K')
+    Ratioeps_K = eps_KNP / eps_KSM
+
+    BRBpKnunuNP,BRBpKnunuSM = flavio.np_prediction('BR(B+->Knunu)', myw),flavio.sm_prediction('BR(B+->Knunu)')
+    RatioBpKnunu = BRBpKnunuNP / BRBpKnunuSM
+
+    BRBppinunuNP,BRBppinunuSM = flavio.np_prediction('BR(B+->pinunu)', myw),flavio.sm_prediction('BR(B+->pinunu)')
+    RatioBppinunu = BRBppinunuNP / BRBppinunuSM
+
+    BRB0pinunuNP,BRB0pinunuSM = flavio.np_prediction('BR(B0->pinunu)', myw),flavio.sm_prediction('BR(B0->pinunu)')
+    RatioB0pinunu = BRB0pinunuNP / BRB0pinunuSM
+
+    BRB0KnunuNP,BRB0KnunuSM = flavio.np_prediction('BR(B0->Knunu)', myw),flavio.sm_prediction('BR(B0->Knunu)')
+    RatioB0Knunu = BRB0KnunuNP / BRB0KnunuSM
+
+    BRBXsllNP,BRBXsllSM = flavio.np_prediction('<BR>(B->Xsll)', myw, q2min=2.0 , q2max=4.3),flavio.sm_prediction('<BR>(B->Xsll)', q2min=2.0 , q2max=4.3)
+    RatioBRBXsll = BRBXsllNP / BRBXsllSM
+
+    BRBpmunuNP,BRBpmunuSM  = flavio.np_prediction('BR(B+->munu)', myw),flavio.sm_prediction('BR(B+->munu)')
+    RatioBpmunu = BRBpmunuNP / BRBpmunuSM
+
+    BRBptaunuNP,BRBptaunuSM = flavio.np_prediction('BR(B+->taunu)', myw),flavio.sm_prediction('BR(B+->taunu)')
+    RatioBptaunu = BRBptaunuNP / BRBptaunuSM
+
+    BRBpDlnuNP,BRBpDlnuSM = flavio.np_prediction('BR(B+->Dlnu)', myw),flavio.sm_prediction('BR(B+->Dlnu)')
+    RatioBpDlnu = BRBpDlnuNP / BRBpDlnuSM
+
+    BRDpmunuNP,BRDpmunuSM = flavio.np_prediction('BR(D+->munu)', myw),flavio.sm_prediction('BR(D+->munu)')
+    RatioDpmunu = BRDpmunuNP / BRDpmunuSM
+
+    BRDptaunuNP,BRDptaunuSM = flavio.np_prediction('BR(D+->taunu)', myw),flavio.sm_prediction('BR(D+->taunu)')
+    RatioDptaunu = BRDptaunuNP / BRDptaunuSM
+
+    BRKLmumuNP,BRKLmumuSM = flavio.np_prediction('BR(KL->mumu)', myw),flavio.sm_prediction('BR(KL->mumu)')
+    RatioKLmumu = BRKLmumuNP / BRKLmumuSM
+
+    BRKLeeNP,BRKLeeSM = flavio.np_prediction('BR(KL->ee)', myw),flavio.sm_prediction('BR(KL->ee)')
+    RatioKLee = BRKLeeNP / BRKLeeSM
+
+    BRKppinunuNP,BRKppinunuSM = flavio.np_prediction('BR(K+->pinunu)', myw), flavio.sm_prediction('BR(K+->pinunu)')
+    RatioKppinunu = BRKppinunuNP / BRKppinunuSM
+
+    BRKLpinunuNP,BRKLpinunuSM = flavio.np_prediction('BR(KL->pinunu)', myw),flavio.sm_prediction('BR(KL->pinunu)')
+    RatioKLpinunu = BRKLpinunuNP / BRKLpinunuSM
+
+    epsp_over_epsNP,epsp_over_epsSM = flavio.np_prediction('epsp/eps', myw),flavio.sm_prediction('epsp/eps')
+    Ratioepsp_over_eps = epsp_over_epsNP / epsp_over_epsSM
+
+    RmueB0KllNP,RmueB0KllSM = flavio.np_prediction('Rmue(B0->Kll)', myw, q2=3),flavio.sm_prediction('Rmue(B0->Kll)', q2=3)
+    RatioRmueB0Kll = RmueB0KllNP / RmueB0KllSM
+
+    RmueBpKllNP,RmueBpKllSM = flavio.np_prediction('Rmue(B+->Kll)', myw, q2=3),flavio.sm_prediction('Rmue(B+->Kll)', q2=3)
+    RatioRmueBpKll = RmueBpKllNP / RmueBpKllSM
+
+    RatioList = [RatioBXsgamma,RatioB0ee,RatioBsee,RatioB0mumu,RatioBsmumu,RatioB0tautau,\
+                RatioBstautau,RatioDeltaMd,RatioDeltaMs,RatioRBpmue,RatioRB0mue,\
+                Ratioeps_K,RatioBpKnunu,RatioBppinunu,RatioB0pinunu,RatioB0Knunu,\
+                RatioBRBXsll,RatioBpmunu,RatioBptaunu,RatioBpDlnu,RatioDpmunu,RatioDptaunu,\
+                RatioKLmumu,RatioKLee,RatioKppinunu,RatioKLpinunu,Ratioepsp_over_eps,RatioRmueB0Kll,\
+                RatioRmueBpKll]
+
+    """"
+    print("BR(B->Xsgamma) / BR_SM(B->Xsgamma) : ",RatioBXsgamma)
+    print("BR(B0->ee) / BR_SM(B0->ee) : ",RatioB0ee)
+    print("BR(Bs->ee) / BR_SM(Bs->ee) : ",RatioBsee)
+    print("BR(B0->mumu) / BR_SM(B0->mumu) : ",RatioB0mumu)
+    print("BR(Bs->mumu) / BR_SM(Bs->mumu) : ",RatioBsmumu)
+    print("BR(B0->tautau) / BR_SM(B0->tautau) : ",RatioB0tautau)
+    print("BR(Bs->tautau) / BR_SM(Bs->tautau) : ",RatioBstautau)
+    print("DeltaM_d / DeltaM_d_SM : ",RatioDeltaMd)
+    print("DeltaM_s / DeltaM_s_SM : ",RatioDeltaMs)
+    print("Rmue(B+->K*ll) / Rmue(B+->K*ll)_SM : ",RatioRBpmue)
+    print("Rmue(B0->K*ll) / Rmue(B0->K*ll)_SM : ",RatioRB0mue)
+    print("eps_K / eps_K_SM  : ",Ratioeps_K)
+    print("BR(B+->Knunu) / BR(B+->Knunu)_SM : ", RatioBpKnunu)
+    print("BR(B+->pinunu) / BR(B+->pinunu)_SM : ", RatioBppinunu)
+    print("BR(B0->pinunu) / BR(B0->pinunu)_SM : ", RatioB0pinunu)
+    print("BR(B0->Knunu) / BR(B0->Knunu)_SM : ", RatioB0Knunu)
+    print("BR(B->Xsll) / BR(B->Xsll)_SM : ", RatioBRBXsll)
+    print("BR(B+->munu) / BR(B+->munu)_SM : ", RatioBpmunu)
+    print("BR(B+->taunu) / BR(B+->taunu)_SM : ", RatioBptaunu)
+    print("BR(B+->Dlnu) / BR(B+->Dlnu)_SM : ", RatioBpDlnu)
+    print("BR(D+->munu) / BR(D+->munu)_SM : ", RatioDpmunu)
+    print("BR(D+->taunu) / BR(D+->taunu)_SM : ", RatioDptaunu)
+    print("BR(KL->mumu) / BR(KL->mumu)_SM : ", RatioKLmumu)
+    print("BR(KL->ee) / BR(KL->ee)_SM : ", RatioKLee)
+    print("BR(K+->pinunu) / BR(K+->pinunu)_SM : ", RatioKppinunu)
+    print("BR(KL->pinunu) / BR(KL->pinunu)_SM : ", RatioKLpinunu)
+    print("epsp/eps / (epsp/eps)_SM : ", Ratioepsp_over_eps)
+    print("Rmue(B0->Kll) / Rmue(B0->Kll)_SM : ", RatioRmueB0Kll)
+    print("Rmue(B+->Kll) / Rmue(B+->Kll)_SM : ", RatioRmueBpKll)
+    """
+    passFlavio = all(i <= 1 for i in RatioList)
+    return passFlavio,RatioList
 
 # In[23]:
 
@@ -471,6 +609,11 @@ if run_analysis:
     HB_STU = [] #[T_parameter,S_parameter,U_parameter]
     HB_data = []
 
+    AP_vevg4 = [] # [V1,V2,VS,g4])
+    AP_Masses = [] # [VZ_M,VZp_M,hh_1_M,hh_2_M,hh_3_M,Ah_3_M,Hm_2_M]
+    AP_couplings = [] # [AL1,AL2,AL3,AL4,Ad2,AD1,AD2,AD3]
+    AP_STU = [] #[T_parameter,S_parameter,U_parameter]
+    AP_data = []
 
     for i in range(from_batch_nu,to_batch_nu):
         dir = 'batch_{}/Result_data/Spheno_output_Folder'.format(i)
@@ -510,10 +653,13 @@ if run_analysis:
                 os.system(HiggsSignals + ' ' + 'latestresults 2 effC 5 1' + ' ' + data_spheno )
                 #print("Finished runing for batch:{} and point:{}".format(i,j))
 
-                HiggsBounds_pass, obsratio, HBresult = HiggsBounds_reader_limit_function(i,j)
+                HiggsBounds_pass, obsratio, HBresult,pchanel = HiggsBounds_reader_limit_function(i,j)
 
                 Pvalue,chi_2_tot,HiggsSignal_pass=HiggsSignals_reader_limit_function(i,j)
 
+                passFlavio,RatioList = FlavioFun(i,j)
+
+                HB_data.append(pchanel)
 
                 if HiggsBounds_pass and HiggsSignal_pass:
                     n_HB += 1
@@ -522,6 +668,13 @@ if run_analysis:
                     HB_Masses.append(Listmasses)
                     HB_couplings.append([quartics,ancouplings,YDre,YUre,YRre,YlightN,YheavyN,imYukawas])
                     HB_STU.append([T_parameter,S_parameter,U_parameter])
+
+                    if passFlavio:
+                        AP_vevg4.append([V1,V2,VS])
+                        AP_Masses.append(Listmasses)
+                        AP_couplings.append([quartics,ancouplings,YDre,YUre,YRre,YlightN,YheavyN,imYukawas])
+                        AP_STU.append([T_parameter,S_parameter,U_parameter])
+                        AP_data.append(RatioList)
 
                 EW_vevg4.append([V1,V2,VS])
                 EW_Masses.append(Listmasses)
@@ -567,18 +720,24 @@ if run_analysis:
     write_couplings_txt(D_STU,"D_STU")
     write_couplings_txt(EW_STU,"EW_STU")
     write_couplings_txt(HB_STU,"HB_STU")
+    write_couplings_txt(AP_STU,"AP_STU")
     # Masses
     write_couplings_txt(D_Masses,"D_Masses")
     write_couplings_txt(EW_Masses,"EW_Masses")
     write_couplings_txt(HB_Masses,"HB_Masses")
+    write_couplings_txt(AP_Masses,"AP_Masses")
     # quartic couplings
     write_couplings_txt(D_couplings,"D_couplings")
     write_couplings_txt(EW_couplings,"EW_couplings")
     write_couplings_txt(HB_couplings,"HB_couplings")
+    write_couplings_txt(AP_couplings,"AP_couplings")
     # VEVs and g4
     write_couplings_txt(D_vevg4,"D_vevg4")
     write_couplings_txt(EW_vevg4,"EW_vevg4")
     write_couplings_txt(HB_vevg4,"HB_vevg4")
+    write_couplings_txt(AP_vevg4,"AP_vevg4")
+
+
     print("The shell was executed")
 
 
