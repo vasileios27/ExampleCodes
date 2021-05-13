@@ -279,7 +279,7 @@ def HiggsBounds_reader_limit_function(i,j):
          # channel numbers used in this file
          #         527 : (p p)->h3 ->V V (combination) ((hep-ex) arXiv:1808.02380 (ATLAS))
         if line.startswith('# (for full list of processes, see Key.dat)'):
-
+            Chanel = False
         if not line.lstrip().startswith('#'):
             obsratio = float(line.split()[-2])
             HBresult = float(line.split()[-4])
