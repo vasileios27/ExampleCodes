@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-cluster = False # If you run the scrip on the cluster you need to add
-nupoints = 1 #number of points simulated
+cluster = True # If you run the scrip on the cluster you need to add
+nupoints = 1000 #number of points simulated
 # This code aims to create a working system for the BGL like two Higgs doublet models with a complex singlet and to calculate points passing the unitarity constraints and running them through SPheno.  All the points will be saved in one folder
 
 # In[2]:
@@ -1154,7 +1154,7 @@ def RanAngles():
     a3 = np.random.uniform(0,np.pi)
     beta = np.random.uniform(np.arctan(1),np.arctan(15))
     delta = np.random.uniform(np.arccos(1),np.arccos(0.9))
-    gamma1 = np.random.uniform(np.arccos(1),np.arccos(0))
+    gamma1 = np.random.uniform(np.arccos(1),np.arccos(0.9))
     return a2,a3,beta,delta,gamma1
 def higgsSQ_masses():
     mass = np.random.uniform(200**2,700**2)
@@ -1162,7 +1162,7 @@ def higgsSQ_masses():
     mH2sq = np.random.uniform(pow(130,2),pow(500,2))
     mH3sq = np.random.uniform(pow(130,2),pow(500,2))
     mCh = np.random.uniform(pow(80,2),pow(500,2))
-    mAh2sq = np.random.uniform(pow(10,-7),pow(10,-5))
+    mAh2sq = np.random.uniform(pow(10,-20),pow(10,-12))
     mAh3sq = np.random.uniform(pow(80,2),pow(500,2))
     if mAh2sq > mAh3sq:
         mAh2sq , mAh3sq = mAh3sq , mAh2sq

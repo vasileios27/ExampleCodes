@@ -12,7 +12,7 @@ import numpy as np
 import flavio
 from wilson import Wilson
 
-cluster = True # If you run the scrip on the cluster
+cluster = False # If you run the scrip on the cluster
 from_batch_nu = 1
 to_batch_nu = 2
 run_analysis = True
@@ -272,23 +272,15 @@ def HiggsBounds_reader_limit_function(i,j):
 
     data_higgsbounds = 'batch_{}/Result_data/Spheno_output_Folder/point_{}/HiggsBounds_results.dat'.format(i,j)
     R = open( data_higgsbounds, 'r')
-    Chanel = False
-    pchanel = []
     for line in R:
-        if line.startswith('# channel numbers used in this file'):
-            Chanel = True
-            pchanel.append(line)
-         # channel numbers used in this file
-         #         527 : (p p)->h3 ->V V (combination) ((hep-ex) arXiv:1808.02380 (ATLAS))
-        if line.startswith('# (for full list of processes, see Key.dat)'):
-            Chanel = False
         if not line.lstrip().startswith('#'):
             obsratio = float(line.split()[-2])
             HBresult = float(line.split()[-4])
+            chanel = float(line.split()[-3])
             if float(line.split()[-2]) < 1 and HBresult == 1:
                 HiggsBounds_pass = True
             else :  HiggsBounds_pass = False
-    return HiggsBounds_pass, obsratio, HBresult,pchanel
+    return HiggsBounds_pass, obsratio, HBresult,chanel
 
 
 # In[5]:
@@ -542,40 +534,7 @@ def FlavioFun(i,j):
                 RatioBRBXsll,RatioBpmunu,RatioBptaunu,RatioBpDlnu,RatioDpmunu,RatioDptaunu,\
                 RatioKLmumu,RatioKLee,RatioKppinunu,RatioKLpinunu,Ratioepsp_over_eps,RatioRmueB0Kll,\
                 RatioRmueBpKll]
-
-    """"
-    print("BR(B->Xsgamma) / BR_SM(B->Xsgamma) : ",RatioBXsgamma)
-    print("BR(B0->ee) / BR_SM(B0->ee) : ",RatioB0ee)
-    print("BR(Bs->ee) / BR_SM(Bs->ee) : ",RatioBsee)
-    print("BR(B0->mumu) / BR_SM(B0->mumu) : ",RatioB0mumu)
-    print("BR(Bs->mumu) / BR_SM(Bs->mumu) : ",RatioBsmumu)
-    print("BR(B0->tautau) / BR_SM(B0->tautau) : ",RatioB0tautau)
-    print("BR(Bs->tautau) / BR_SM(Bs->tautau) : ",RatioBstautau)
-    print("DeltaM_d / DeltaM_d_SM : ",RatioDeltaMd)
-    print("DeltaM_s / DeltaM_s_SM : ",RatioDeltaMs)
-    print("Rmue(B+->K*ll) / Rmue(B+->K*ll)_SM : ",RatioRBpmue)
-    print("Rmue(B0->K*ll) / Rmue(B0->K*ll)_SM : ",RatioRB0mue)
-    print("eps_K / eps_K_SM  : ",Ratioeps_K)
-    print("BR(B+->Knunu) / BR(B+->Knunu)_SM : ", RatioBpKnunu)
-    print("BR(B+->pinunu) / BR(B+->pinunu)_SM : ", RatioBppinunu)
-    print("BR(B0->pinunu) / BR(B0->pinunu)_SM : ", RatioB0pinunu)
-    print("BR(B0->Knunu) / BR(B0->Knunu)_SM : ", RatioB0Knunu)
-    print("BR(B->Xsll) / BR(B->Xsll)_SM : ", RatioBRBXsll)
-    print("BR(B+->munu) / BR(B+->munu)_SM : ", RatioBpmunu)
-    print("BR(B+->taunu) / BR(B+->taunu)_SM : ", RatioBptaunu)
-    print("BR(B+->Dlnu) / BR(B+->Dlnu)_SM : ", RatioBpDlnu)
-    print("BR(D+->munu) / BR(D+->munu)_SM : ", RatioDpmunu)
-    print("BR(D+->taunu) / BR(D+->taunu)_SM : ", RatioDptaunu)
-    print("BR(KL->mumu) / BR(KL->mumu)_SM : ", RatioKLmumu)
-    print("BR(KL->ee) / BR(KL->ee)_SM : ", RatioKLee)
-    print("BR(K+->pinunu) / BR(K+->pinunu)_SM : ", RatioKppinunu)
-    print("BR(KL->pinunu) / BR(KL->pinunu)_SM : ", RatioKLpinunu)
-    print("epsp/eps / (epsp/eps)_SM : ", Ratioepsp_over_eps)
-    print("Rmue(B0->Kll) / Rmue(B0->Kll)_SM : ", RatioRmueB0Kll)
-    print("Rmue(B+->Kll) / Rmue(B+->Kll)_SM : ", RatioRmueBpKll)
-    """
-    passFlavio = all(i <= 1 for i in RatioList)
-    return passFlavio,RatioList
+    return RatioList
 
 # In[23]:
 
@@ -610,12 +569,9 @@ if run_analysis:
     HB_couplings = [] # [AL1,AL2,AL3,AL4,Ad2,AD1,AD2,AD3]
     HB_STU = [] #[T_parameter,S_parameter,U_parameter]
     HB_data = []
+    HB_Flaviodata = []
 
-    AP_vevg4 = [] # [V1,V2,VS,g4])
-    AP_Masses = [] # [VZ_M,VZp_M,hh_1_M,hh_2_M,hh_3_M,Ah_3_M,Hm_2_M]
-    AP_couplings = [] # [AL1,AL2,AL3,AL4,Ad2,AD1,AD2,AD3]
-    AP_STU = [] #[T_parameter,S_parameter,U_parameter]
-    AP_data = []
+
 
     for i in range(from_batch_nu,to_batch_nu):
         dir = 'batch_{}/Result_data/Spheno_output_Folder'.format(i)
@@ -655,28 +611,22 @@ if run_analysis:
                 os.system(HiggsSignals + ' ' + 'latestresults 2 effC 5 1' + ' ' + data_spheno )
                 #print("Finished runing for batch:{} and point:{}".format(i,j))
 
-                HiggsBounds_pass, obsratio, HBresult,pchanel = HiggsBounds_reader_limit_function(i,j)
+                HiggsBounds_pass, obsratio, HBresult,chanel = HiggsBounds_reader_limit_function(i,j)
 
                 Pvalue,chi_2_tot,HiggsSignal_pass=HiggsSignals_reader_limit_function(i,j)
 
-                passFlavio,RatioList = FlavioFun(i,j)
 
-                HB_data.append(pchanel)
+                HB_data.append(["chanel exludind point:{}".format(chanel)])
 
                 if HiggsBounds_pass and HiggsSignal_pass:
                     n_HB += 1
                     print('The point {1} in batch {0} bassed EWPT and HB'.format(i,j))
+                    RatioList = FlavioFun(i,j)
                     HB_vevg4.append([V1,V2,VS])
                     HB_Masses.append(Listmasses)
                     HB_couplings.append([quartics,ancouplings,YDre,YUre,YRre,YlightN,YheavyN,imYukawas])
                     HB_STU.append([T_parameter,S_parameter,U_parameter])
-
-                    if passFlavio:
-                        AP_vevg4.append([V1,V2,VS])
-                        AP_Masses.append(Listmasses)
-                        AP_couplings.append([quartics,ancouplings,YDre,YUre,YRre,YlightN,YheavyN,imYukawas])
-                        AP_STU.append([T_parameter,S_parameter,U_parameter])
-                        AP_data.append(RatioList)
+                    HB_Flaviodata.append(RatioList)
 
                 EW_vevg4.append([V1,V2,VS])
                 EW_Masses.append(Listmasses)
@@ -718,26 +668,24 @@ EW_pass
 if run_analysis:
     write_couplings_dat(EW_pass,"EW_pass")
     write_couplings_dat(HB_data,"HB_data")
+    write_couplings_dat(HB_Flaviodata,"HB_Flaviodata")
     #STU Values
     write_couplings_txt(D_STU,"D_STU")
     write_couplings_txt(EW_STU,"EW_STU")
     write_couplings_txt(HB_STU,"HB_STU")
-    write_couplings_txt(AP_STU,"AP_STU")
     # Masses
     write_couplings_txt(D_Masses,"D_Masses")
     write_couplings_txt(EW_Masses,"EW_Masses")
     write_couplings_txt(HB_Masses,"HB_Masses")
-    write_couplings_txt(AP_Masses,"AP_Masses")
+
     # quartic couplings
     write_couplings_txt(D_couplings,"D_couplings")
     write_couplings_txt(EW_couplings,"EW_couplings")
     write_couplings_txt(HB_couplings,"HB_couplings")
-    write_couplings_txt(AP_couplings,"AP_couplings")
     # VEVs and g4
     write_couplings_txt(D_vevg4,"D_vevg4")
     write_couplings_txt(EW_vevg4,"EW_vevg4")
     write_couplings_txt(HB_vevg4,"HB_vevg4")
-    write_couplings_txt(AP_vevg4,"AP_vevg4")
 
 
     print("The shell was executed")
