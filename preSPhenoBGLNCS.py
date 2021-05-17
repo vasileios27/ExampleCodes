@@ -47,37 +47,10 @@ if not cluster:
     SPheno_Path= '~/SPheno-4.0.4'
     spheno_BGL = os.path.join(SPheno_Path,'bin/SPhenoBGLNCS')
 
-    #FlexibleSUSY folder
-    FlexibleSUSY_Path= '~/PhaseTracer/FlexibleSUSY'
-    FlexibleSUSY_BGL = os.path.join(FlexibleSUSY_Path,'models/THDMSBGL/run_THDMSBGL.x')
-
-    #HiggsBound folder
-    HiggsBounds_Path = '~/higgsbounds/build'
-    HiggsBounds = os.path.join(HiggsBounds_Path,'HiggsBounds')
-
-
-    #HiggsSignal folder
-    HiggsSignals_Path = '~/higgssignals/build'
-    HiggsSignals = os.path.join(HiggsSignals_Path,'HiggsSignals')
-
 if cluster:
     #SPheno cluster
     SPheno_Path= '~/opt/SPheno-4.0.4'
-    spheno_BGL = os.path.join(SPheno_Path,'bin/BGLNCS')
-
-    #HiggsBound folder
-    HiggsBounds_Path = '~/opt/higgsbounds/build'
-    HiggsBounds = os.path.join(HiggsBounds_Path,'HiggsBounds')
-
-
-    #HiggsSignal folder
-    HiggsSignals_Path = '~/opt/higgssignals/build'
-    HiggsSignals = os.path.join(HiggsSignals_Path,'HiggsSignals')
-
-
-# MadGraph folder
-#MadFolder_Path='/Users/vasileios_vatellis/MG5_aMC_v2_8_0'
-#MG = os.path.join(MadFolder_Path,'bin/mg5_aMc')
+    spheno_BGL = os.path.join(SPheno_Path,'bin/SPhenoBGLNCS')
 
 Running_Env = Working_Folder +'/Running_Env'
 Resutls_Env = Working_Folder +'/Resutls_Env'
