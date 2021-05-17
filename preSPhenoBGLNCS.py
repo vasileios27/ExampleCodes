@@ -1204,7 +1204,7 @@ while W_counter > counter:
         Alim2 = -2.
         gb2 = 0
         #Upl = 8*3.14
-        Upl = 10
+        Upl = 5
 
         if abs(gl1) < Upl and abs(gl2) < Upl and abs(gl3) < Upl and abs(gl4) < Upl :
             if abs(gl_s1) < Upl and abs(gl_s2) < Upl and abs(gl_s3) < Upl :
