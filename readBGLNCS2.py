@@ -12,14 +12,15 @@ import numpy as np
 import flavio
 from wilson import Wilson
 import csv
+import sys
 
 
 # In[2]:
 
 
-cluster = False # If you run the scrip on the cluster
-from_batch_nu = 1
-to_batch_nu = 2
+cluster = True # If you run the scrip on the cluster
+from_batch_nu = int(sys.argv[1])
+to_batch_nu = int(sys.argv[2])
 run_analysis = True
 
 
@@ -114,7 +115,7 @@ def SPheno_reader(i,j,SPheno_spc_File):
     if float(LSTU[3].split()[0] )==3  :U_parameter = float(LSTU[3].split()[1] )
     if float(BRhh1[6].split()[2])==35 and float(BRhh1[6].split()[3])==35: BRhh2toAh2Ah2 =  float(BRhh1[6].split()[0])
 
-    SphenoDataList = [Lambda1,Lambda2,Lambda3,Lambda4,Lambda1Dash,Lambda2Dash,Lambda3Dash,Mu3,Mub,alpha1,alpha2,alpha3,alpha4,\
+    SphenoDataList = [i,j,Lambda1,Lambda2,Lambda3,Lambda4,Lambda1Dash,Lambda2Dash,Lambda3Dash,Mu3,Mub,alpha1,alpha2,alpha3,alpha4,\
     Y1d11,Y1d12,Y1d13,Y1d21,Y1d22,Y1d23,Y2d31,Y2d32,Y2d33,Y1u11,Y1u12,Y1u21,Y1u22,Y2u33,Y1e11,Y1e12,Y1e22,Y1e33,\
     Y1n11,Y1n12,Y1n22,Y1n33,B11,B12,B21,B22,C13,C23,C31,C32,\
     imY1d11,imY1d12,imY1d13,imY1d21,imY1d22,imY1d23,imY2d31,imY2d32,imY2d33,imY1u11,imY1u12,imY1u21,imY1u22,imY1e11,imY1e12,imY1e21,imY1e22,\
