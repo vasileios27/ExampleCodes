@@ -18,10 +18,12 @@ import sys
 # In[2]:
 
 
-cluster = True # If you run the scrip on the cluster
-from_batch_nu = int(sys.argv[1])
-to_batch_nu = int(sys.argv[2])
+cluster = False # If you run the scrip on the cluster
+from_batch_nu = 1
+to_batch_nu = 2
 run_analysis = True
+name1 = 'D{0}T{1}data'.format(from_batch_nu,to_batch_nu-1)
+name2 = 'EW{0}T{1}data'.format(from_batch_nu,to_batch_nu-1)
 
 
 # In[3]:
@@ -348,10 +350,10 @@ if run_analysis:
                 HBHS = [HiggsBounds_pass,HBresult,chanel,obsratio, ncomb,HiggsSignal_pass,Pvalue,nobs_tot,nobs_h,nobs_mu,csq_tot,csq_mh,csq_mu]
 
                 NewDatalist = SphenoDataList + HBHS + RatioList
-                WdataSPheno('EWdata',NewDatalist)
+                WdataSPheno(name2,NewDatalist)
                 #print(len(NewDatalist),len(SphenoDataList),len(HBHS),len(RatioList))
             else:
-                WdataSPheno('Ddata',SphenoDataList)
+                WdataSPheno(name1,SphenoDataList)
 
     print('Total points {0}, points passed EWPT {1}'.format(n_tot,n_EW))
 
