@@ -862,7 +862,7 @@ Block DECAYOPTIONS   # Options to turn on/off specific decays
 
 #creation of a function like the write_mg_cards fo the LesHouches file
 def write_input_LHE(Mhh1,Mhh2,Mhh3,MAh2,M_Ah3,MHm,beta,a2,a3,delta,gamma1,\
-OeL,OeR,Oa,vlu,vru,vld,vrd,ANGLES,UCKM,OZA):
+OeL,OeR,Oa,vlu,vru,vld,vrd,ANGLES,UCKM):
 #creation of a function like the write_mg_cards fo the LesHouches file
      with open(os.path.join(Resutls_Env,'input_LHE.BGLNCS'),'w') as f:
         f.write("""
@@ -918,17 +918,6 @@ ZH_SCALARMIX :
 3 1: {6}
 3 2: {7}
 3 3: {8}""".format(Oa[0,0],Oa[0,1],Oa[0,2],Oa[1,0],Oa[1,1],Oa[1,2],Oa[2,0],Oa[2,1],Oa[2,2]))
-        f.write("""
-ZA_SCALARMIX :
-1 1: {0}
-1 2: {1}
-1 3: {2}
-2 1: {3}
-2 2: {4}
-2 3: {5}
-3 1: {6}
-3 2: {7}
-3 3: {8}""".format(OZA[0,0],OZA[0,1],OZA[0,2],OZA[1,0],OZA[1,1],OZA[1,2],OZA[2,0],OZA[2,1],OZA[2,2]))
         f.write("""
 UDLMIX :
 1 1: {0}
@@ -1112,17 +1101,7 @@ def ZH_matrix(delta,beta,a2,a3):
 
     return Oa
 
-def ZA_matrix(beta,gamma1):
-    Oa4 = Matrix([[cos(beta), sin(beta), 0],
-                [-sin(beta) , cos(beta), 0],
-                [0, 0, 1]])
 
-    Oa3 =  Matrix([[1,0,0],
-                   [0, cos(gamma1), -sin(gamma1)],
-                   [0, sin(gamma1), cos(gamma1)]])
-    Oa = simplify(np.dot(Oa3,Oa4))
-
-    return Oa
 # # Running the main program
 
 list = os.listdir(Spheno_output_Folder) # dir is your directory path
@@ -1144,17 +1123,17 @@ W_counter = counter + nupoints
 
 
 def RanAngles():
-    a2 = np.random.uniform(0,2*np.pi)
-    a3 = np.random.uniform(0,2*np.pi)
-    beta = np.random.uniform(0,2*np.pi) #np.random.uniform(np.arctan(1),np.arctan(15))
-    delta = np.random.uniform(0,2*np.pi) #np.random.uniform(np.arccos(1),np.arccos(0.9))
-    gamma1 = np.random.uniform(0,2*np.pi) #np.random.uniform(np.arccos(1),np.arccos(0.9))
+    a2 = np.random.uniform(0,np.pi)
+    a3 = np.random.uniform(0,np.pi)
+    beta = np.random.uniform(np.arctan(1),np.arctan(15))
+    delta = np.random.uniform(np.arccos(1),np.arccos(0.9))
+    gamma1 = np.random.uniform(np.arccos(1),np.arccos(0.9))
     return a2,a3,beta,delta,gamma1
 def higgsSQ_masses():
     mass = np.random.uniform(200**2,700**2)
     mH1sq = 125.09**2
-    mH2sq = np.random.uniform(pow(125.09,2),pow(500,2))
-    mH3sq = np.random.uniform(pow(125.09,2),pow(500,2))
+    mH2sq = np.random.uniform(pow(130,2),pow(500,2))
+    mH3sq = np.random.uniform(pow(130,2),pow(500,2))
     mCh = np.random.uniform(pow(80,2),pow(500,2))
     mAh2sq = np.random.uniform(pow(10,-7),pow(10,-5))
     mAh3sq = np.random.uniform(pow(80,2),pow(500,2))
@@ -1172,13 +1151,13 @@ def VEVs(beta):
     v = 246
     v_u = np.cos(beta)*v
     v_d = np.sin(beta)*v
-    v3 = np.random.uniform(pow(10,2),2*pow(10,3))
+    v3 = np.random.uniform(pow(10,2),9*pow(10,2))
     return v,v_u,v_d,v3
 
 def Fanction_alphas():
-    galpha_1 = np.random.uniform(-1*pow(10,-4),+1*pow(10,-4))
-    galpha_2 = np.random.uniform(-1*pow(10,-4),+1*pow(10,-4))
-    galpha_3 = np.random.uniform(-1*pow(10,-4),+1*pow(10,-4))
+    galpha_1 = np.random.uniform(-1*pow(10,-4),-1*pow(10,-4))
+    galpha_2 = np.random.uniform(-1*pow(10,-4),-1*pow(10,-4))
+    galpha_3 = np.random.uniform(-1*pow(10,-4),-1*pow(10,-4))
     return galpha_1,galpha_2,galpha_3
 
 
@@ -1261,8 +1240,7 @@ while W_counter > counter:
 
 
                                 Oa = ZH_matrix(delta,beta,a2,a3)
-                                OZA = ZA_matrix(beta,gamma1)
-                                write_input_LHE(Mhh1,Mhh2,Mhh3,MAh2,M_Ah3,MHm,beta,a2,a3,delta,gamma1,OeL,OeR,Oa,vlu,vru,vld,vrd,ANGLES,UCKM,OZA)
+                                write_input_LHE(Mhh1,Mhh2,Mhh3,MAh2,M_Ah3,MHm,beta,a2,a3,delta,gamma1,OeL,OeR,Oa,vlu,vru,vld,vrd,ANGLES,UCKM)
 
 
 
