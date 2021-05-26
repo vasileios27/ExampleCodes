@@ -68,7 +68,7 @@ def SPheno_reader(i,j,SPheno_spc_File):
         if line.startswith('Block MASS  # Mass spectrum'):Pass6 = False
         if line.startswith('Block FlavorKitQFV # quark flavor violating observables'):Pass1=False
         if line.startswith('DECAY        25'): Pass2 = True
-        if line.startswith('DECAY        26'): Pass2 = False
+        if line.startswith('DECAY        23'): Pass2 = False
         if Pass1:
             LSTU.append(line.strip('\n'))
         if Pass2 :
@@ -115,14 +115,38 @@ def SPheno_reader(i,j,SPheno_spc_File):
     if float(LSTU[1].split()[0] )==1  :T_parameter = float(LSTU[1].split()[1] )
     if float(LSTU[2].split()[0] )==2  :S_parameter = float(LSTU[2].split()[1] )
     if float(LSTU[3].split()[0] )==3  :U_parameter = float(LSTU[3].split()[1] )
-    if float(BRhh1[6].split()[2])==35 and float(BRhh1[6].split()[3])==35: BRhh2toAh2Ah2 =  float(BRhh1[6].split()[0])
+    #BR
+    if float(BRhh1[2].split()[2])==22 and float(BRhh1[2].split()[3])==22: BRhh1toVPVP =  float(BRhh1[2].split()[0])
+    if float(BRhh1[3].split()[2])==21 and float(BRhh1[3].split()[3])==21: BRhh1toVGVG =  float(BRhh1[3].split()[0])
+    if float(BRhh1[4].split()[2])==23 and float(BRhh1[4].split()[3])==23: BRhh1toVZVZ =  float(BRhh1[4].split()[0])
+    if float(BRhh1[5].split()[2])==24 and float(BRhh1[5].split()[3])==-24: BRhh1toVWVW =  float(BRhh1[5].split()[0])
+    if float(BRhh1[6].split()[2])==35 and float(BRhh1[6].split()[3])==35: BRhh1toAh2Ah2 =  float(BRhh1[6].split()[0])
+    if float(BRhh1[7].split()[2])==35 and float(BRhh1[7].split()[3])==23: BRhh1toAh2VZ =  float(BRhh1[7].split()[0])
+    if float(BRhh1[8].split()[2])==-1 and float(BRhh1[8].split()[3])==1: BRhh1toFdp1Fd1 =  float(BRhh1[8].split()[0])
+    if float(BRhh1[9].split()[2])==-1 and float(BRhh1[9].split()[3])==3: BRhh1toFdp1Fd2 =  float(BRhh1[9].split()[0])
+    if float(BRhh1[10].split()[2])==-1 and float(BRhh1[10].split()[3])==5: BRhh1toFdp1Fd3 =  float(BRhh1[10].split()[0])
+    if float(BRhh1[11].split()[2])==-3 and float(BRhh1[11].split()[3])==1: BRhh1toFdp2Fd1 =  float(BRhh1[11].split()[0])
+    if float(BRhh1[12].split()[2])==-3 and float(BRhh1[12].split()[3])==3: BRhh1toFdp2Fd2 =  float(BRhh1[12].split()[0])
+    if float(BRhh1[13].split()[2])==-3 and float(BRhh1[13].split()[3])==5: BRhh1toFdp2Fd3 =  float(BRhh1[13].split()[0])
+    if float(BRhh1[14].split()[2])==-5 and float(BRhh1[14].split()[3])==1: BRhh1toFdp3Fd1 =  float(BRhh1[14].split()[0])
+    if float(BRhh1[15].split()[2])==-5 and float(BRhh1[15].split()[3])==3: BRhh1toFdp3Fd2 =  float(BRhh1[15].split()[0])
+    if float(BRhh1[16].split()[2])==-5 and float(BRhh1[16].split()[3])==5: BRhh1toFdp3Fd3 =  float(BRhh1[16].split()[0])
+    if float(BRhh1[17].split()[2])==-11 and float(BRhh1[17].split()[3])==11: BRhh1toFep1Fe1 =  float(BRhh1[17].split()[0])
+    if float(BRhh1[18].split()[2])==-13 and float(BRhh1[18].split()[3])==13: BRhh1toFep2Fe2 =  float(BRhh1[18].split()[0])
+    if float(BRhh1[19].split()[2])==-15 and float(BRhh1[19].split()[3])==15: BRhh1toFep3Fe3 =  float(BRhh1[19].split()[0])
+    if float(BRhh1[20].split()[2])==-2 and float(BRhh1[20].split()[3])==2: BRhh1toFup1Fu1 =  float(BRhh1[20].split()[0])
+    if float(BRhh1[21].split()[2])==-4 and float(BRhh1[21].split()[3])==4: BRhh1toFup2Fu2 =  float(BRhh1[21].split()[0])
+
+
+         1.20293581E-09    2           -2          2   # BR(hh_1 -> Fu_1^* Fu_1 )
+         2.81162999E-04    2           -4          4   # BR(hh_1 -> Fu_2^* Fu_2 )
 
     SphenoDataList = [i,j,Lambda1,Lambda2,Lambda3,Lambda4,Lambda1Dash,Lambda2Dash,Lambda3Dash,Mu3,Mub,alpha1,alpha2,alpha3,alpha4,\
     Y1d11,Y1d12,Y1d13,Y1d21,Y1d22,Y1d23,Y2d31,Y2d32,Y2d33,Y1u11,Y1u12,Y1u21,Y1u22,Y2u33,Y1e11,Y1e12,Y1e22,Y1e33,\
     Y1n11,Y1n12,Y1n22,Y1n33,B11,B12,B21,B22,C13,C23,C31,C32,\
     imY1d11,imY1d12,imY1d13,imY1d21,imY1d22,imY1d23,imY2d31,imY2d32,imY2d33,imY1u11,imY1u12,imY1u21,imY1u22,imY1e11,imY1e12,imY1e21,imY1e22,\
     V1,V2,VS,Mhh1,Mhh2,Mhh3,MAh2,MAh3,MHm2,MFv1,MFv2,MFv3,MFv4,MFv5,MFv6,\
-    T_parameter,S_parameter,U_parameter,BRhh2toAh2Ah2]
+    T_parameter,S_parameter,U_parameter,BRhh1toAh2Ah2]
 
     return SphenoDataList
 

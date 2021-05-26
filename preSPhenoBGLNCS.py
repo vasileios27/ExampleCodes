@@ -817,7 +817,7 @@ Block SPhenoInput   # SPheno specific input
  57 1               # Calculate low energy constraints
  65 1               # Solution tadpole equation
  66 1               # Two-Scale Matching
- 67 0               # effective Higgs mass calculation
+ 67 1               # effective Higgs mass calculation
  75 0               # Write WHIZARD files
  76 2               # Write HiggsBounds file
  77 0               # Output for MicrOmegas (running masses for light quarks; real mixing matrices)
