@@ -77,6 +77,19 @@ if cluster:
     #SPheno cluster
     SPheno_Path= '~/opt/SPheno-4.0.4'
     spheno_BGL = os.path.join(SPheno_Path,'bin/SPhenoBGLNCS')
+    
+    #HiggsBound folder
+    HiggsBounds_Path = '~/opt/higgsbounds/build'
+    HiggsBounds = os.path.join(HiggsBounds_Path,'HiggsBounds')
+
+
+    #HiggsSignal folder
+    HiggsSignals_Path = '~/opt/higgssignals/build'
+    HiggsSignals = os.path.join(HiggsSignals_Path,'HiggsSignals')
+    
+    #MadGraph
+    MG_Path = '~opt/MG5_aMC_v3_1_1/bin/mg5_aMC'
+
 
 
 # In[6]:
