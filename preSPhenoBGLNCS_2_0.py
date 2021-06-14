@@ -88,8 +88,7 @@ if cluster:
     HiggsSignals = os.path.join(HiggsSignals_Path,'HiggsSignals')
     
     #MadGraph
-    MG_Path = '~opt/MG5_aMC_v3_1_1/bin/mg5_aMC'
-
+    MG_Path = '~/opt/MG5_aMC_v3_1_1/bin/mg5_aMC'
 
 
 # In[6]:
@@ -263,14 +262,15 @@ def Yukawa_alaysis(beta,v3):
     Y_lim = np.sqrt(4*np.pi) # limit for the Yukawa couplings
 
 
-    # Mass parameters
+    # Mass parameters data from
+    #https://pdg.lbl.gov/2021/tables/contents_tables.html
     #------------------
-    Mu = np.array(0.00122)
-    Mc = np.array(0.590)
-    Mt = np.array(162.9)
-    Md = np.array(0.00276)
-    Ms = np.array(0.052)
-    Mb = np.array(2.75)
+    Mu = np.array(2.16)*pow(10,-3) #2.16 Mev
+    Mc = np.array(1.27)
+    Mt = np.array(172.76)
+    Md = np.array(4.67)*pow(10,-3)
+    Ms = np.array(93)*pow(10,-3)
+    Mb = np.array(4.18)
 
     # Angles used to diagonalize up-quarks
     #------------------
@@ -428,7 +428,7 @@ def NutrinoF(v1,v2,v3):
         num_OMNS = np.dot(OeL6x6.conj().T,UmixNu)
 
         NuPass += 1
-        if abs(list_eigvals[0]) < pow(10,-7) and abs(list_eigvals[1]) < pow(10,-7) and abs(list_eigvals[2]) < pow(10,-7):
+        if abs(list_eigvals[0]) < pow(10,-9) and abs(list_eigvals[1]) < pow(10,-9) and abs(list_eigvals[2]) < pow(10,-9):
             if 0.797 < abs(num_OMNS[0,0]) and abs(num_OMNS[0,0]) < 0.842:
                 if 0.518 < abs(num_OMNS[0,1]) and abs(num_OMNS[0,1]) < 0.585:
                     if 0.143 < abs(num_OMNS[0,2]) and abs(num_OMNS[0,2]) < 0.156:
@@ -456,11 +456,12 @@ def NutrinoF(v1,v2,v3):
 def Lepton_neutrino_Yukawa_couplings_BGL(v_s,v_u,v_d):
     v_sm = 246
     #definitios
-    #mass parameters
+    #mass parameters data from
+    #https://pdg.lbl.gov/2021/tables/contents_tables.html
     #------------------
-    Me = np.array(0.000485289396)
-    Mmu =np.array( 0.1024673155)
-    Mtau = np.array(1.74215)
+    Me = np.array(0.5109989461)*pow(10,-3) #0.5109989461 MeV
+    Mmu =np.array(105.6583745)*pow(10,-3) # 105.6583745 Mev
+    Mtau = np.array(1776.86)*pow(10,-3) #1776.86 MeV
 
     m1,m2,m3 = Me,Mmu,Mtau
     #vevs
