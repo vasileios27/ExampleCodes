@@ -5,7 +5,7 @@
 
 
 cluster = False # If you run the scrip on the cluster you need to add
-nupoints = 1 #number of points simulated
+nupoints = 100 #number of points simulated
 
 
 # This code aims to create a working system for the BGL like two Higgs doublet models with a complex singlet and to calculate points passing the unitarity constraints and running them through SPheno.  All the points will be saved in one folder
@@ -490,6 +490,8 @@ def Lepton_neutrino_Yukawa_couplings_BGL(v_s,v_u,v_d):
     #------------------
     NuPass2=0
     while NuPass2 <1000:
+        if NuPass2 ==999:
+            NuPass2 = 0
         NuPass2 +=1
         #Yukawa calculations
         #------------------
@@ -1411,7 +1413,7 @@ def Fanction_alphas():
     return galpha_1,galpha_2,galpha_3
 
 
-# In[28]:
+# In[ ]:
 
 
 while W_counter > counter:
