@@ -5,7 +5,7 @@
 
 
 cluster = False # If you run the scrip on the cluster you need to add
-nupoints = 100 #number of points simulated
+nupoints = 10 #number of points simulated
 
 
 # This code aims to create a working system for the BGL like two Higgs doublet models with a complex singlet and to calculate points passing the unitarity constraints and running them through SPheno.  All the points will be saved in one folder
@@ -400,7 +400,7 @@ def neutrinosMatrix(v1,v2,v3,Y1n11,Y1n12,Y1n21,Y1n22,Y2n33,BB11,BB22,BB12,BB21,C
 
 def NutrinoF(v1,v2,v3):    
     Y1n11,Y1n12,Y1n21,Y1n22,Y2n33 = np.random.uniform(low = pow(10,-7) ,high = pow(10,-4) ,size = 5 )
-    BB11,BB22,BB12,BB21,C13,C31,C23,C32 = np.random.uniform(low = 0.1  ,high = 10 ,size = 8 )
+    BB11,BB22,BB12,BB21,C13,C31,C23,C32 = np.random.uniform(low = 0.01  ,high = 10 ,size = 8 )
         
     NutrinoMatrix = neutrinosMatrix(v1,v2,v3,Y1n11,Y1n12,Y1n21,Y1n22,Y2n33,BB11,BB22,BB12,BB21,C13,C31,C23,C32)
     eigvals,eigvecs = la.eig(NutrinoMatrix)
@@ -1366,7 +1366,8 @@ counter = len(list)
 break_code1 = 'go'
 break_code2 = 'go'
 
-W_counter = counter + nupoints
+#W_counter = counter + nupoints
+W_counter = nupoints
 
 
 # In[27]:
@@ -1539,7 +1540,8 @@ while W_counter > counter:
                                     
                                     if break_code2=='go':
                                     #if float(delta_chi) < 7.815:
-
+                                        list = os.listdir(Spheno_output_Folder) # dir is your directory path
+                                        counter = len(list)
                                         counter += 1
                                         print("counter: {}".format(counter))
 
