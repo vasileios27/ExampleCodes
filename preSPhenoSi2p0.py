@@ -1324,7 +1324,7 @@ def higgsSQ_masses():
     mH2sq = np.random.uniform(pow(125.09,2),pow(800,2))
     mH3sq = np.random.uniform(pow(125.09,2),pow(800,2))
     mCh = np.random.uniform(pow(20,2),pow(800,2))
-    mAh2sq = np.random.uniform(pow(20,2),pow(800,2))#np.random.uniform(pow(10,-7),pow(10,-5))
+    mAh2sq = np.random.uniform(pow(10,-7),pow(800,2))#np.random.uniform(pow(10,-7),pow(10,-5))
     mAh3sq = np.random.uniform(pow(20,2),pow(800,2))
     if mAh2sq > mAh3sq:
         mAh2sq , mAh3sq = mAh3sq , mAh2sq
