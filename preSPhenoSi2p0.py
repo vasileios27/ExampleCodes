@@ -1311,21 +1311,21 @@ W_counter = nupoints
 
 def RanAngles():
     #a2 = np.random.uniform(-np.pi/2,np.pi/2)
-    a3 = np.random.uniform(-np.pi/2,np.pi/2)
+    a3 = np.random.uniform(-np.pi,np.pi)
     beta = np.random.uniform(np.arctan(0.5),np.arctan(35))
-    delta1 = np.random.uniform(np.pi/2 -0.8,np.pi/2 + 0.8)
-    a2 = beta + delta1
-    delta = np.random.uniform(np.pi/2 -0.8,np.pi/2 + 0.8)
-    gamma1 = np.random.uniform(np.pi/2 - 0.5,np.pi/2 + 0.5) #np.random.uniform(np.arccos(1),np.arccos(0.9))
+    #delta1 = np.random.uniform(np.pi/2 -0.8,np.pi/2 + 0.8)
+    a2 = np.random.uniform(-np.pi,np.pi)
+    delta = np.random.uniform(np.pi/2 -1,np.pi/2 + 1)
+    gamma1 = np.random.uniform(-np.pi,np.pi) #np.random.uniform(np.pi/2 - 0.5,np.pi/2 + 0.5) #np.random.uniform(np.arccos(1),np.arccos(0.9))
     return a2,a3,beta,delta,gamma1
 def higgsSQ_masses():
-    mass = np.random.uniform(200**2,700**2)
+    #mass = np.random.uniform(200**2,700**2)
     mH1sq = 125.09**2
-    mH2sq = np.random.uniform(pow(125.09,2),pow(800,2))
-    mH3sq = np.random.uniform(pow(125.09,2),pow(800,2))
-    mCh = np.random.uniform(pow(20,2),pow(800,2))
-    mAh2sq = np.random.uniform(pow(10,-7),pow(800,2))#np.random.uniform(pow(10,-7),pow(10,-5))
-    mAh3sq = np.random.uniform(pow(20,2),pow(800,2))
+    mH2sq = np.random.uniform(pow(125.09,2),pow(1500,2))
+    mH3sq = np.random.uniform(pow(125.09,2),pow(1500,2))
+    mCh = np.random.uniform(pow(5,2),pow(1500,2))
+    mAh2sq = np.random.uniform(pow(5,2),pow(1500,2))#np.random.uniform(pow(10,-7),pow(10,-5))
+    mAh3sq = np.random.uniform(pow(5,2),pow(1500,2))
     if mAh2sq > mAh3sq:
         mAh2sq , mAh3sq = mAh3sq , mAh2sq
     if mH2sq > mH3sq:
